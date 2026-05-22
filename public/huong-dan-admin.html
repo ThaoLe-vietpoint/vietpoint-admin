@@ -1,0 +1,2565 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hướng Dẫn Sử Dụng Admin – VietPoint Service</title>
+    <style>
+        :root {
+            --blue: #2563eb;
+            --blue-light: #dbeafe;
+            --green: #059669;
+            --green-light: #d1fae5;
+            --amber: #d97706;
+            --amber-light: #fef3c7;
+            --red: #dc2626;
+            --red-light: #fee2e2;
+            --purple: #7c3aed;
+            --purple-light: #ede9fe;
+            --slate: #475569;
+            --slate-light: #f1f5f9;
+            --border: #e2e8f0;
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --white: #ffffff;
+            --brand: #2F5E9E;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+            background: #f8fafc;
+            color: var(--text);
+            line-height: 1.7;
+            font-size: 15px;
+        }
+
+        /* ── TOPBAR ── */
+        .topbar {
+            background: var(--brand);
+            color: white;
+            padding: 0 24px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .topbar-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .topbar-logo svg {
+            width: 28px;
+            height: 28px;
+        }
+
+        .topbar-badge {
+            background: rgba(255, 255, 255, 0.2);
+            font-size: 11px;
+            padding: 3px 10px;
+            border-radius: 99px;
+        }
+
+        /* ── LAYOUT ── */
+        .layout {
+            display: flex;
+            min-height: calc(100vh - 56px);
+        }
+
+        /* ── SIDEBAR NAV ── */
+        .toc {
+            width: 260px;
+            background: white;
+            border-right: 1px solid var(--border);
+            padding: 20px 0;
+            position: sticky;
+            top: 56px;
+            height: calc(100vh - 56px);
+            overflow-y: auto;
+            flex-shrink: 0;
+        }
+
+        .toc-title {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            color: var(--text-muted);
+            padding: 8px 20px 4px;
+        }
+
+        .toc a {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 20px;
+            font-size: 13px;
+            color: var(--slate);
+            text-decoration: none;
+            border-left: 2px solid transparent;
+            transition: all .15s;
+        }
+
+        .toc a:hover {
+            background: var(--slate-light);
+            color: var(--brand);
+            border-left-color: var(--brand);
+        }
+
+        .toc a .toc-icon {
+            font-size: 16px;
+            width: 22px;
+            text-align: center;
+        }
+
+        .toc-divider {
+            height: 1px;
+            background: var(--border);
+            margin: 8px 16px;
+        }
+
+        /* ── MAIN ── */
+        .main {
+            flex: 1;
+            padding: 40px 48px;
+            max-width: 900px;
+        }
+
+        /* ── HERO ── */
+        .hero {
+            background: linear-gradient(135deg, #1e3a5f 0%, #2F5E9E 60%, #4f84c4 100%);
+            border-radius: 20px;
+            padding: 48px 40px;
+            color: white;
+            margin-bottom: 48px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            right: -60px;
+            top: -60px;
+            width: 300px;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+        }
+
+        .hero h1 {
+            font-size: 30px;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        .hero p {
+            font-size: 16px;
+            opacity: .85;
+            max-width: 520px;
+        }
+
+        .hero-chips {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .hero-chip {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 99px;
+            padding: 5px 14px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* ── SECTION ── */
+        .section {
+            margin-bottom: 56px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .section-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+
+        .section-title {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--text);
+        }
+
+        .section-subtitle {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        h2 {
+            font-size: 22px;
+            font-weight: 800;
+            margin-bottom: 16px;
+            color: var(--text);
+        }
+
+        h3 {
+            font-size: 16px;
+            font-weight: 700;
+            margin: 24px 0 10px;
+            color: var(--text);
+        }
+
+        p {
+            margin-bottom: 12px;
+            color: var(--slate);
+        }
+
+        /* ── STEPS ── */
+        .steps {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin: 16px 0;
+        }
+
+        .step {
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 16px;
+        }
+
+        .step-num {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--brand);
+            color: white;
+            font-size: 13px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .step-body {
+            flex: 1;
+        }
+
+        .step-body strong {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 4px;
+            color: var(--text);
+        }
+
+        .step-body p {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        /* ── CALLOUTS ── */
+        .callout {
+            border-radius: 12px;
+            padding: 14px 16px;
+            margin: 16px 0;
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+            border-left: 4px solid;
+        }
+
+        .callout-icon {
+            font-size: 20px;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .callout-body {
+            flex: 1;
+        }
+
+        .callout-body strong {
+            display: block;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 3px;
+        }
+
+        .callout-body p {
+            font-size: 13px;
+            margin: 0;
+        }
+
+        .callout.tip {
+            background: var(--blue-light);
+            border-color: var(--blue);
+        }
+
+        .callout.warn {
+            background: var(--amber-light);
+            border-color: var(--amber);
+        }
+
+        .callout.danger {
+            background: var(--red-light);
+            border-color: var(--red);
+        }
+
+        .callout.success {
+            background: var(--green-light);
+            border-color: var(--green);
+        }
+
+        /* ── MOCK SCREEN ── */
+        .mock-screen {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+            margin: 20px 0;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+        }
+
+        .mock-titlebar {
+            background: #f8fafc;
+            border-bottom: 1px solid var(--border);
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .mock-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .mock-url {
+            flex: 1;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 4px 12px;
+            font-size: 11px;
+            color: var(--text-muted);
+            margin: 0 12px;
+            font-family: monospace;
+        }
+
+        .mock-body {
+            padding: 24px;
+        }
+
+        /* ── MOCK SIDEBAR ── */
+        .mock-layout {
+            display: flex;
+            gap: 0;
+        }
+
+        .mock-sidebar {
+            width: 160px;
+            background: white;
+            border-right: 1px solid var(--border);
+            padding: 12px 0;
+            flex-shrink: 0;
+        }
+
+        .mock-sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px 14px;
+            font-size: 11px;
+            font-weight: 800;
+            color: var(--brand);
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 8px;
+        }
+
+        .mock-nav-item {
+            padding: 7px 12px;
+            font-size: 11px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: default;
+        }
+
+        .mock-nav-item.active {
+            background: var(--blue-light);
+            color: var(--blue);
+            font-weight: 600;
+            border-left: 2px solid var(--blue);
+        }
+
+        .mock-nav-group {
+            font-size: 9px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            color: #cbd5e1;
+            padding: 10px 12px 3px;
+        }
+
+        .mock-main {
+            flex: 1;
+            padding: 20px;
+            background: #f8fafc;
+        }
+
+        /* ── STAT CARDS ── */
+        .mock-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .mock-stat {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .mock-stat-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .mock-stat-val {
+            font-size: 18px;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .mock-stat-label {
+            font-size: 9px;
+            color: var(--text-muted);
+        }
+
+        /* ── TABLE ── */
+        .mock-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11px;
+        }
+
+        .mock-table th {
+            background: #f8fafc;
+            border-bottom: 1px solid var(--border);
+            padding: 8px 10px;
+            text-align: left;
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .mock-table td {
+            padding: 9px 10px;
+            border-bottom: 1px solid #f1f5f9;
+            color: var(--slate);
+        }
+
+        .mock-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* ── BADGE ── */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 2px 8px;
+            border-radius: 99px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        .badge-green {
+            background: var(--green-light);
+            color: var(--green);
+        }
+
+        .badge-amber {
+            background: var(--amber-light);
+            color: var(--amber);
+        }
+
+        .badge-slate {
+            background: var(--slate-light);
+            color: var(--slate);
+        }
+
+        .badge-blue {
+            background: var(--blue-light);
+            color: var(--blue);
+        }
+
+        /* ── GRID CARDS ── */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin: 16px 0;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin: 16px 0;
+        }
+
+        .info-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 18px;
+        }
+
+        .info-card-icon {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .info-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .info-card p {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        /* ── MOCK FORM ── */
+        .mock-form {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .mock-field label {
+            display: block;
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .mock-field input,
+        .mock-field textarea {
+            width: 100%;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 12px;
+            color: var(--slate);
+            background: #f8fafc;
+        }
+
+        .mock-field textarea {
+            height: 60px;
+            resize: none;
+        }
+
+        .mock-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 9px 18px;
+            border-radius: 9px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: default;
+            border: none;
+        }
+
+        .mock-btn-primary {
+            background: var(--brand);
+            color: white;
+        }
+
+        .mock-btn-green {
+            background: #059669;
+            color: white;
+        }
+
+        .mock-btn-outline {
+            background: white;
+            color: var(--slate);
+            border: 1px solid var(--border) !important;
+            border: none;
+        }
+
+        .mock-btn-red {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        /* ── BLOG CARD MOCK ── */
+        .mock-post-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .mock-post-thumb {
+            height: 80px;
+            background: linear-gradient(135deg, #dbeafe, #ede9fe);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+        }
+
+        .mock-post-body {
+            padding: 10px;
+        }
+
+        .mock-post-title {
+            font-size: 11px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: var(--text);
+        }
+
+        .mock-post-meta {
+            font-size: 10px;
+            color: var(--text-muted);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* ── LABEL ── */
+        .label-overlay {
+            position: relative;
+            margin: 20px 0;
+        }
+
+        .label-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: #1e293b;
+            color: white;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 6px;
+        }
+
+        .label-tag .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #22c55e;
+        }
+
+        /* ── DIVIDER ── */
+        .divider {
+            height: 1px;
+            background: var(--border);
+            margin: 40px 0;
+        }
+
+        /* ── KEYBOARD ── */
+        kbd {
+            display: inline-block;
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            border-bottom: 2px solid #94a3b8;
+            border-radius: 5px;
+            padding: 2px 8px;
+            font-family: monospace;
+            font-size: 12px;
+            color: var(--text);
+        }
+
+        /* ── ORDERED LIST ── */
+        ol.guide {
+            padding-left: 0;
+            list-style: none;
+            counter-reset: guide;
+        }
+
+        ol.guide li {
+            counter-increment: guide;
+            display: flex;
+            gap: 10px;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: var(--slate);
+        }
+
+        ol.guide li::before {
+            content: counter(guide);
+            min-width: 22px;
+            height: 22px;
+            background: var(--brand);
+            color: white;
+            border-radius: 50%;
+            font-size: 11px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        ul.check {
+            list-style: none;
+            padding: 0;
+        }
+
+        ul.check li {
+            padding: 5px 0;
+            padding-left: 26px;
+            position: relative;
+            font-size: 14px;
+            color: var(--slate);
+        }
+
+        ul.check li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--green);
+            font-weight: 700;
+        }
+
+        /* ── ANNOTATION ARROW ── */
+        .annotated {
+            position: relative;
+        }
+
+        .annotation {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: #fbbf24;
+            color: #1e293b;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 6px;
+            white-space: nowrap;
+        }
+
+        .arrow-down::after {
+            content: '↓';
+            font-size: 14px;
+            display: block;
+            text-align: center;
+            color: #fbbf24;
+        }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 900px) {
+            .toc {
+                display: none;
+            }
+
+            .main {
+                padding: 24px 20px;
+            }
+
+            .mock-stats {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .grid-2,
+            .grid-3 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ── PRINT ── */
+        @media print {
+            .toc {
+                display: none;
+            }
+
+            .topbar {
+                display: none;
+            }
+
+            .main {
+                padding: 0;
+            }
+        }
+
+        /* scrollbar */
+        .toc::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .toc::-webkit-scrollbar-thumb {
+            background: #e2e8f0;
+            border-radius: 9px;
+        }
+
+        .highlight-box {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px 24px;
+            margin: 16px 0;
+        }
+
+        .feature-row {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            padding: 10px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .feature-row:last-child {
+            border-bottom: none;
+        }
+
+        .feature-row-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .feature-row-body strong {
+            font-size: 14px;
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        .feature-row-body span {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .mock-topbar {
+            background: white;
+            border-bottom: 1px solid var(--border);
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .tab-row {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 16px;
+        }
+
+        .tab {
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: default;
+        }
+
+        .tab.active {
+            background: var(--brand);
+            color: white;
+        }
+
+        .tab.inactive {
+            background: #f1f5f9;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+        <div class="topbar-logo">
+            <svg viewBox="0 0 28 28" fill="none">
+                <rect width="28" height="28" rx="7" fill="white" fill-opacity=".15" />
+                <path d="M8 20L14 8L20 20" stroke="white" stroke-width="2.5" stroke-linecap="round"
+                    stroke-linejoin="round" />
+                <path d="M10.5 16h7" stroke="white" stroke-width="2" stroke-linecap="round" />
+            </svg>
+            VietPoint Admin
+        </div>
+        <span class="topbar-badge">📖 Hướng dẫn sử dụng</span>
+    </div>
+
+    <!-- LAYOUT -->
+    <div class="layout">
+
+        <!-- SIDEBAR TOC -->
+        <nav class="toc">
+            <div class="toc-title">Mục lục</div>
+
+            <a href="#tong-quan"><span class="toc-icon">🏠</span>Tổng quan</a>
+            <a href="#dang-nhap"><span class="toc-icon">🔐</span>Đăng nhập</a>
+            <a href="#dashboard"><span class="toc-icon">📊</span>Dashboard</a>
+
+            <div class="toc-divider"></div>
+            <div class="toc-title">Nội dung</div>
+            <a href="#blog"><span class="toc-icon">📝</span>Bài viết Blog</a>
+            <a href="#tao-bai"><span class="toc-icon">✏️</span>Tạo bài viết</a>
+            <a href="#noi-dung"><span class="toc-icon">🗂️</span>Nội dung trang</a>
+            <a href="#media"><span class="toc-icon">🖼️</span>Thư viện ảnh</a>
+
+            <div class="toc-divider"></div>
+            <div class="toc-title">Khách hàng</div>
+            <a href="#leads"><span class="toc-icon">👥</span>Khách liên hệ</a>
+            <a href="#testimonials"><span class="toc-icon">⭐</span>Đánh giá KH</a>
+
+            <div class="toc-divider"></div>
+            <div class="toc-title">Hệ thống</div>
+            <a href="#bao-hiem"><span class="toc-icon">🛡️</span>Bảo hiểm</a>
+            <a href="#cham-soc"><span class="toc-icon">💙</span>Chăm sóc KH</a>
+            <a href="#nhan-vien"><span class="toc-icon">👤</span>Nhân viên</a>
+            <a href="#cai-dat"><span class="toc-icon">⚙️</span>Cài đặt</a>
+
+            <div class="toc-divider"></div>
+            <a href="#faq"><span class="toc-icon">❓</span>Câu hỏi thường gặp</a>
+        </nav>
+
+        <!-- MAIN CONTENT -->
+        <main class="main">
+
+            <!-- HERO -->
+            <div class="hero">
+                <h1>📖 Hướng Dẫn Sử Dụng<br />VietPoint Admin</h1>
+                <p>Tài liệu hướng dẫn toàn diện dành cho người quản trị website VietPoint Service — không cần biết lập
+                    trình.</p>
+                <div class="hero-chips">
+                    <span class="hero-chip">📝 Blog & Bài viết</span>
+                    <span class="hero-chip">👥 Khách hàng</span>
+                    <span class="hero-chip">🖼️ Thư viện ảnh</span>
+                    <span class="hero-chip">🛡️ Bảo hiểm</span>
+                    <span class="hero-chip">⚙️ Cài đặt</span>
+                </div>
+            </div>
+
+            <!-- ═══ TỔNG QUAN ═══ -->
+            <section class="section" id="tong-quan">
+                <div class="section-header">
+                    <div class="section-icon" style="background:#dbeafe">🏠</div>
+                    <div>
+                        <div class="section-title">Tổng quan hệ thống</div>
+                        <div class="section-subtitle">Giới thiệu các tính năng chính của Admin Panel</div>
+                    </div>
+                </div>
+
+                <p>VietPoint Admin là <strong>trang quản trị nội bộ</strong> dùng để quản lý toàn bộ nội dung hiển thị
+                    trên website công khai vietpointservice.com. Mọi thay đổi bạn thực hiện ở đây sẽ <strong>ngay lập
+                        tức cập nhật</strong> lên website.</p>
+
+                <div class="grid-3">
+                    <div class="info-card">
+                        <div class="info-card-icon">📝</div>
+                        <h4>Blog & Nội dung</h4>
+                        <p>Tạo, chỉnh sửa bài viết blog và nội dung các trang: Trang chủ, Giới thiệu, Tuyển dụng…</p>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-card-icon">👥</div>
+                        <h4>Khách hàng</h4>
+                        <p>Xem danh sách khách hàng đã điền form liên hệ, đánh dấu đã xử lý, quản lý đánh giá.</p>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-card-icon">🖼️</div>
+                        <h4>Thư viện ảnh</h4>
+                        <p>Upload, quản lý và sử dụng lại ảnh trên toàn bộ website một cách dễ dàng.</p>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-card-icon">🛡️</div>
+                        <h4>Trang Bảo hiểm</h4>
+                        <p>Cập nhật nội dung các trang sản phẩm bảo hiểm: IUL, Term Life, Max-Funded IUL, IUL cho trẻ.
+                        </p>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-card-icon">💙</div>
+                        <h4>Chăm sóc KH</h4>
+                        <p>Quản lý câu chuyện khách hàng, hướng dẫn sử dụng, quyền lợi bảo hiểm.</p>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-card-icon">👤</div>
+                        <h4>Nhân viên</h4>
+                        <p>Quản lý tài khoản nhân viên, cấp quyền truy cập vào hệ thống admin.</p>
+                    </div>
+                </div>
+
+                <div class="callout tip">
+                    <span class="callout-icon">💡</span>
+                    <div class="callout-body">
+                        <strong>Mẹo bắt đầu nhanh</strong>
+                        <p>Đọc từ trên xuống lần đầu để hiểu tổng thể. Sau đó dùng mục lục bên trái để tìm nhanh tính
+                            năng cụ thể khi cần.</p>
+                    </div>
+                </div>
+            </section>
+
+            <div class="divider"></div>
+
+            <!-- ═══ ĐĂNG NHẬP ═══ -->
+            <section class="section" id="dang-nhap">
+                <div class="section-header">
+                    <div class="section-icon" style="background:#ede9fe">🔐</div>
+                    <div>
+                        <div class="section-title">Đăng nhập hệ thống</div>
+                        <div class="section-subtitle">Truy cập trang admin lần đầu</div>
+                    </div>
+                </div>
+
+                <div class="steps">
+                    <div class="step">
+                        <div class="step-num">1</div>
+                        <div class="step-body">
+                            <strong>Mở trình duyệt và truy cập địa chỉ admin</strong>
+                            <p>Nhập vào thanh địa chỉ: <kbd>admin.vietpointservice.com</kbd> hoặc địa chỉ nội bộ được
+                                cung cấp.</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-num">2</div>
+                        <div class="step-body">
+                            <strong>Nhập Email và Mật khẩu</strong>
+                            <p>Sử dụng email và mật khẩu được quản trị viên cấp. <strong>Không chia sẻ thông tin đăng
+                                    nhập</strong> cho người khác.</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-num">3</div>
+                        <div class="step-body">
+                            <strong>Nhấn nút "Đăng nhập"</strong>
+                            <p>Hệ thống sẽ kiểm tra tài khoản và chuyển bạn đến trang Dashboard.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mock login screen -->
+                <div class="mock-screen">
+                    <div class="mock-titlebar">
+                        <div class="mock-dot" style="background:#ff5f56"></div>
+                        <div class="mock-dot" style="background:#ffbd2e"></div>
+                        <div class="mock-dot" style="background:#27c93f"></div>
+                        <div class="mock-url">admin.vietpointservice.com/login</div>
+                    </div>
+                    <div class="mock-body"
+                        style="display:flex;justify-content:center;padding:40px 24px;background:#f8fafc">
+                        <div
+                            style="background:white;border:1px solid var(--border);border-radius:16px;padding:32px;width:320px">
+                            <div style="text-align:center;margin-bottom:24px">
+                                <div
+                                    style="width:48px;height:48px;background:var(--brand);border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:24px">
+                                    🔐</div>
+                                <div style="font-size:18px;font-weight:800;color:var(--text)">VietPoint Admin</div>
+                                <div style="font-size:12px;color:var(--text-muted);margin-top:4px">Đăng nhập để tiếp tục
+                                </div>
+                            </div>
+                            <div class="mock-form">
+                                <div class="mock-field">
+                                    <label>Email</label>
+                                    <input type="text" value="admin@vietpoint.com" readonly />
+                                </div>
+                                <div class="mock-field">
+                                    <label>Mật khẩu</label>
+                                    <input type="password" value="••••••••" readonly />
+                                </div>
+                                <div style="margin-top:4px">
+                                    <button class="mock-btn mock-btn-primary"
+                                        style="width:100%;justify-content:center">🔑 Đăng nhập</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="callout warn">
+                    <span class="callout-icon">⚠️</span>
+                    <div class="callout-body">
+                        <strong>Quên mật khẩu?</strong>
+                        <p>Liên hệ quản trị viên cấp cao để được cấp lại mật khẩu. Bạn cũng có thể vào phần <strong>Cài
+                                đặt → Đổi mật khẩu</strong> nếu còn nhớ mật khẩu cũ.</p>
+                    </div>
+                </div>
+            </section>
+
+            <div class="divider"></div>
+
+            <!-- ═══ DASHBOARD ═══ -->
+            <section class="section" id="dashboard">
+                <div class="section-header">
+                    <div class="section-icon" style="background:#dbeafe">📊</div>
+                    <div>
+                        <div class="section-title">Trang Dashboard</div>
+                        <div class="section-subtitle">Tổng quan hoạt động website</div>
+                    </div>
+                </div>
+
+                <p>Dashboard là trang đầu tiên sau khi đăng nhập. Đây là <strong>bảng tổng hợp</strong> hiển thị các chỉ
+                    số quan trọng và hoạt động gần đây của website.</p>
+
+                <!-- Mock Dashboard -->
+                <div class="mock-screen">
+                    <div class="mock-titlebar">
+                        <div class="mock-dot" style="background:#ff5f56"></div>
+                        <div class="mock-dot" style="background:#ffbd2e"></div>
+                        <div class="mock-dot" style="background:#27c93f"></div>
+                        <div class="mock-url">admin.vietpointservice.com</div>
+                    </div>
+                    <div class="mock-layout">
+                        <!-- sidebar -->
+                        <div class="mock-sidebar">
+                            <div class="mock-sidebar-logo">🔷 VietPoint</div>
+                            <div class="mock-nav-group">Tổng quan</div>
+                            <div class="mock-nav-item active">🏠 Dashboard</div>
+                            <div class="mock-nav-group">Nội dung</div>
+                            <div class="mock-nav-item">🏡 Trang chủ</div>
+                            <div class="mock-nav-item">📝 Blog</div>
+                            <div class="mock-nav-item">🖼️ Thư viện ảnh</div>
+                            <div class="mock-nav-group">Khách hàng</div>
+                            <div class="mock-nav-item">👥 Liên hệ</div>
+                            <div class="mock-nav-item">⭐ Đánh giá</div>
+                            <div class="mock-nav-group">Hệ thống</div>
+                            <div class="mock-nav-item">⚙️ Cài đặt</div>
+                        </div>
+                        <!-- main -->
+                        <div class="mock-main">
+                            <div style="font-size:14px;font-weight:800;color:var(--text);margin-bottom:12px">👋 Xin
+                                chào, Admin!</div>
+                            <div class="mock-stats">
+                                <div class="mock-stat">
+                                    <div class="mock-stat-icon" style="background:#dbeafe">📝</div>
+                                    <div>
+                                        <div class="mock-stat-val" style="color:#2563eb">12</div>
+                                        <div class="mock-stat-label">Tổng bài viết</div>
+                                    </div>
+                                </div>
+                                <div class="mock-stat">
+                                    <div class="mock-stat-icon" style="background:#d1fae5">✅</div>
+                                    <div>
+                                        <div class="mock-stat-val" style="color:#059669">8</div>
+                                        <div class="mock-stat-label">Đã xuất bản</div>
+                                    </div>
+                                </div>
+                                <div class="mock-stat">
+                                    <div class="mock-stat-icon" style="background:#ede9fe">👥</div>
+                                    <div>
+                                        <div class="mock-stat-val" style="color:#7c3aed">47</div>
+                                        <div class="mock-stat-label">Khách liên hệ</div>
+                                    </div>
+                                </div>
+                                <div class="mock-stat">
+                                    <div class="mock-stat-icon" style="background:#fef3c7">⭐</div>
+                                    <div>
+                                        <div class="mock-stat-val" style="color:#d97706">15</div>
+                                        <div class="mock-stat-label">Đánh giá</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- recent leads table -->
+                            <div
+                                style="background:white;border:1px solid var(--border);border-radius:10px;overflow:hidden">
+                                <div
+                                    style="padding:10px 12px;border-bottom:1px solid var(--border);font-size:11px;font-weight:700;color:var(--text)">
+                                    📋 Liên hệ gần đây</div>
+                                <table class="mock-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Tên</th>
+                                            <th>Email</th>
+                                            <th>Ngày</th>
+                                            <th>Trạng thái</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Nguyễn Văn A</td>
+                                            <td>a@gmail.com</td>
+                                            <td>22/05/2026</td>
+                                            <td><span class="badge badge-amber">Chưa xử lý</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Trần Thị B</td>
+                                            <td>b@gmail.com</td>
+                                            <td>21/05/2026</td>
+                                            <td><span class="badge badge-green">Đã xử lý</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Lê Văn C</td>
+                                            <td>c@gmail.com</td>
+                                            <td>20/05/2026</td>
+                                            <td><span class="badge badge-green">Đã xử lý</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <h3 style="margin-top:0">📌 Ý nghĩa các chỉ số trên Dashboard</h3>
+                    <div class="feature-row">
+                        <div class="feature-row-icon" style="background:#dbeafe">📝</div>
+                        <div class="feature-row-body">
+                            <strong>Tổng bài viết</strong>
+                            <span>Tổng số bài viết blog đã tạo (bao gồm cả bản nháp và đã xuất bản)</span>
+                        </div>
+                    </div>
+                    <div class="feature-row">
+                        <div class="feature-row-icon" style="background:#d1fae5">✅</div>
+                        <div class="feature-row-body">
+                            <strong>Đã xuất bản</strong>
+                            <span>Số bài viết đang hiển thị công khai trên website</span>
+                        </div>
+                    </div>
+                    <div class="feature-row">
+                        <div class="feature-row-icon" style="background:#ede9fe">👥</div>
+                        <div class="feature-row-body">
+                            <strong>Khách liên hệ</strong>
+                            <span>Số lượng khách hàng đã điền form liên hệ trên website</span>
+                        </div>
+                    </div>
+                    <div class="feature-row">
+                        <div class="feature-row-icon" style="background:#fef3c7">⭐</div>
+                        <div class="feature-row-body">
+                            <strong>Đánh giá</strong>
+                            <span>Tổng số testimonial (nhận xét của khách hàng) trong hệ thống</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="divider"></div>
+
+            <!-- ═══ BLOG ═══ -->
+            <section class="section" id="blog">
+                <div class="section-header">
+                    <div class="section-icon" style="background:#fef3c7">📝</div>
+                    <div>
+                        <div class="section-title">Quản lý Bài viết Blog</div>
+                        <div class="section-subtitle">Xem, tìm kiếm và quản lý tất cả bài viết</div>
+                    </div>
+                </div>
+
+                <p>Truy cập menu <strong>"Bài viết Blog"</strong> ở thanh bên trái để vào trang quản lý blog. Tại đây
+                    bạn thấy danh sách tất cả bài viết với hình thu nhỏ, trạng thái xuất bản và các tùy chọn hành động.
+                </p>
+
+                <!-- Mock Blog Page -->
+                <div class="mock-screen">
+                    <div class="mock-titlebar">
+                        <div class="mock-dot" style="background:#ff5f56"></div>
+                        <div class="mock-dot" style="background:#ffbd2e"></div>
+                        <div class="mock-dot" style="background:#27c93f"></div>
+                        <div class="mock-url">admin.vietpointservice.com/blog</div>
+                    </div>
+                    <div class="mock-body" style="background:#f8fafc">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+                            <div>
+                                <div style="font-size:15px;font-weight:800;color:var(--text)">📝 Bài viết Blog</div>
+                                <div style="font-size:11px;color:var(--text-muted)">Quản lý nội dung song ngữ EN / VI
+                                </div>
+                            </div>
+                            <button class="mock-btn mock-btn-primary">+ Tạo bài viết</button>
+                        </div>
+                        <!-- stats -->
+                        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px">
+                            <div class="mock-stat" style="border:1px solid var(--border)">
+                                <div class="mock-stat-icon" style="background:#dbeafe">📚</div>
+                                <div>
+                                    <div class="mock-stat-val" style="color:#2563eb">12</div>
+                                    <div class="mock-stat-label">Tổng bài viết</div>
+                                </div>
+                            </div>
+                            <div class="mock-stat" style="border:1px solid var(--border)">
+                                <div class="mock-stat-icon" style="background:#d1fae5">🌐</div>
+                                <div>
+                                    <div class="mock-stat-val" style="color:#059669">8</div>
+                                    <div class="mock-stat-label">Đã xuất bản</div>
+                                </div>
+                            </div>
+                            <div class="mock-stat" style="border:1px solid var(--border)">
+                                <div class="mock-stat-icon" style="background:#fef3c7">📄</div>
+                                <div>
+                                    <div class="mock-stat-val" style="color:#d97706">4</div>
+                                    <div class="mock-stat-label">Bản nháp</div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- post cards -->
+                        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
+                            <div class="mock-post-card">
+                                <div class="mock-post-thumb">💰</div>
+                                <div class="mock-post-body">
+                                    <div class="mock-post-title">IUL là gì? Giải thích đơn giản</div>
+                                    <div class="mock-post-meta"><span class="badge badge-green">Đã xuất
+                                            bản</span><span>IUL</span></div>
+                                </div>
+                            </div>
+                            <div class="mock-post-card">
+                                <div class="mock-post-thumb" style="background:linear-gradient(135deg,#d1fae5,#a7f3d0)">
+                                    🛡️</div>
+                                <div class="mock-post-body">
+                                    <div class="mock-post-title">Term Life Insurance cho gia đình</div>
+                                    <div class="mock-post-meta"><span class="badge badge-amber">Bản
+                                            nháp</span><span>Term Life</span></div>
+                                </div>
+                            </div>
+                            <div class="mock-post-card">
+                                <div class="mock-post-thumb" style="background:linear-gradient(135deg,#fce7f3,#fbcfe8)">
+                                    👶</div>
+                                <div class="mock-post-body">
+                                    <div class="mock-post-title">Bảo hiểm IUL cho trẻ em</div>
+                                    <div class="mock-post-meta"><span class="badge badge-green">Đã xuất
+                                            bản</span><span>Kids IUL</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <h3 style="margin-top:0">🔑 Các thao tác trong danh sách bài viết</h3>
+                    <div class="feature-row">
+                        <div class="feature-row-icon" style="background:#dbeafe">✏️</div>
+                        <div class="feature-row-body">
+                            <strong>Chỉnh sửa bài viết</strong>
+                            <span>Nhấp vào thẻ bài viết hoặc nút "Chỉnh sửa" để mở trình soạn thảo</span>
+                        </div>
+                    </div>
+                    <div class="feature-row">
+                        <div class="feature-row-icon" style="background:#d1fae5">🌐</div>
+                        <div class="feature-row-body">
+                            <strong>Xuất bản / Ẩn bài viết</strong>
+                            <span>Nút chuyển đổi trạng thái giúp bài viết hiển thị hoặc ẩn khỏi website</span>
+                        </div>
+                    </div>
+                    <div class="feature-row">
+                        <div class="feature-row-icon" style="background:#fee2e2">🗑️</div>
+                        <div class="feature-row-body">
+                            <strong>Xóa bài viết</strong>
+                            <span>Nhấn nút xóa — hệ thống sẽ hỏi xác nhận trước khi xóa vĩnh viễn</span>
+                        </div>
+                    </div>
+                    <div class="feature-row">
+                        <div class="feature-row-icon" style="background:#fef3c7">👀</div>
+                        <div class="feature-row-body">
+                            <strong>Xem trước trên website</strong>
+                            <span>Nhấn icon "Xem trước" để mở bài viết trên website trong tab mới</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="divider"></div>
+
+            <!-- ═══ TẠO BÀI VIẾT ═══ -->
+            <section class="section" id="tao-bai">
+                <div class="section-header">
+                    <div class="section-icon" style="background:#d1fae5">✏️</div>
+                    <div>
+                        <div class="section-title">Tạo và Chỉnh sửa Bài viết</div>
+                        <div class="section-subtitle">Hướng dẫn viết bài từng bước</div>
+                    </div>
+                </div>
+
+                <p>Nhấn nút <strong>"+ Tạo bài viết"</strong> màu xanh ở góc phải trên để mở form tạo bài mới. Bài viết
+                    hỗ trợ <strong>song ngữ Tiếng Việt và Tiếng Anh</strong>.</p>
+
+                <!-- Mock Blog Editor -->
+                <div class="mock-screen">
+                    <div class="mock-titlebar">
+                        <div class="mock-dot" style="background:#ff5f56"></div>
+                        <div class="mock-dot" style="background:#ffbd2e"></div>
+                        <div class="mock-dot" style="background:#27c93f"></div>
+                        <div class="mock-url">admin.vietpointservice.com/blog/new</div>
+                    </div>
+                    <div class="mock-body" style="background:#f8fafc">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+                            <div style="font-size:14px;font-weight:800;color:var(--text)">✏️ Tạo bài viết mới</div>
+                            <div style="display:flex;gap:8px">
+                                <button class="mock-btn mock-btn-outline" style="border:1px solid var(--border)">💾 Lưu
+                                    nháp</button>
+                                <button class="mock-btn mock-btn-green">🌐 Xuất bản</button>
+                            </div>
+                        </div>
+                        <!-- tabs -->
+                        <div class="tab-row">
+                            <div class="tab active">🇻🇳 Tiếng Việt</div>
+                            <div class="tab inactive">🇺🇸 English</div>
+                            <div class="tab inactive">⚙️ Cài đặt</div>
+                        </div>
+                        <div class="mock-form">
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                                <div class="mock-field">
+                                    <label>Tiêu đề (VI)</label>
+                                    <input value="IUL là gì? Hướng dẫn cho người mới" readonly />
+                                </div>
+                                <div class="mock-field">
+                                    <label>Danh mục</label>
+                                    <input value="IUL" readonly />
+                                </div>
+                            </div>
+                            <div class="mock-field">
+                                <label>Tóm tắt (VI)</label>
+                                <textarea
+                                    readonly>Bài viết giải thích đơn giản về Indexed Universal Life Insurance...</textarea>
+                            </div>
+                            <div class="mock-field">
+                                <label>Nội dung chính (Markdown)</label>
+                                <textarea style="height:80px" readonly>## IUL là gì?
+
+IUL (Indexed Universal Life) là loại bảo hiểm nhân thọ kết hợp đầu tư...
+
+### Lợi ích chính
+- Tích lũy không giới hạn trần lãi suất thị trường
+- Bảo vệ rủi ro tử vong</textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>📋 Các trường cần điền khi tạo bài</h3>
+
+                <div class="steps">
+                    <div class="step">
+                        <div class="step-num">1</div>
+                        <div class="step-body">
+                            <strong>Tab "Tiếng Việt" — Điền nội dung tiếng Việt</strong>
+                            <p>Điền <strong>Tiêu đề VI</strong> (tên bài viết bằng tiếng Việt), <strong>Tóm tắt
+                                    VI</strong> (1–2 câu giới thiệu), và <strong>Nội dung chính</strong>.</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-num">2</div>
+                        <div class="step-body">
+                            <strong>Tab "English" — Điền nội dung tiếng Anh</strong>
+                            <p>Điền tương tự nhưng bằng tiếng Anh. Nếu website chỉ dùng tiếng Việt, bạn vẫn nên điền để
+                                tránh lỗi hiển thị.</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-num">3</div>
+                        <div class="step-body">
+                            <strong>Tab "Cài đặt" — Chọn danh mục và ảnh bìa</strong>
+                            <p>Chọn <strong>Danh mục</strong> phù hợp (IUL, Term Life, Kids IUL…) và chọn <strong>ảnh
+                                    bìa</strong> từ thư viện ảnh.</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-num">4</div>
+                        <div class="step-body">
+                            <strong>Lưu nháp hoặc Xuất bản ngay</strong>
+                            <p>• <strong>"Lưu nháp"</strong>: lưu lại nhưng chưa hiển thị trên website<br />•
+                                <strong>"Xuất bản"</strong>: lưu và hiển thị ngay lên website</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="callout tip">
+                    <span class="callout-icon">📌</span>
+                    <div class="callout-body">
+                        <strong>Hướng dẫn viết nội dung Markdown</strong>
+                        <p>Nội dung bài viết sử dụng định dạng <strong>Markdown</strong> đơn giản:</p>
+                        <ul style="margin-top:8px;padding-left:20px;font-size:13px;color:var(--slate)">
+                            <li><kbd>## Tiêu đề lớn</kbd> → Heading 2</li>
+                            <li><kbd>### Tiêu đề nhỏ</kbd> → Heading 3</li>
+                            <li><kbd>**chữ đậm**</kbd> → <strong>chữ đậm</strong></li>
+                            <li><kbd>- mục 1</kbd> → danh sách gạch đầu dòng</li>
+                            <li><kbd>1. mục 1</kbd> → danh sách đánh số</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="callout warn">
+                    <span class="callout-icon">⚠️</span>
+                    <div class="callout-body">
+                        <strong>Lưu ý về ảnh bìa</strong>
+                        <p>Hãy <strong>upload ảnh lên Thư viện ảnh trước</strong>, sau đó chọn ảnh từ thư viện khi tạo
+                            bài viết. Không nên dán link ảnh từ nguồn bên ngoài vì có thể bị mất.</p>
+                    </div>
+                </div>
+            </section>
+
+            <div class="divider"></div>
+
+            <!-- ═══ NỘI DUNG TRANG ═══ -->
+            <section class="section" id="noi-dung">
+                <div class="section-header">
+                    <div class="section-icon" style="background:#ede9fe">🗂️</div>
+                    <div>
+                        <div class="section-title">Nội dung Trang web</div>
+                        <div class="section-subtitle">Chỉnh sửa từng trang cụ thể trên website</div>
+                    </div>
+                </div>
+
+                <p>Phần <strong>"Nội dung"</strong> trong menu bên trái cho phép bạn chỉnh sửa văn bản, tiêu đề, hình
+                    ảnh của từng trang trên website. Mỗi trang chia thành nhiều <strong>"section"</strong> (phần) để dễ
+                    quản lý.</p>
+
+                <!-- Mock Content Page -->
+                <div class="mock-screen">
+                    <div class="mock-titlebar">
+                        <div class="mock-dot" style="background:#ff5f56"></div>
+                        <div class="mock-dot" style="background:#ffbd2e"></div>
+                        <div class="mock-dot" style="background:#27c93f"></div>
+                        <div class="mock-url">admin.vietpointservice.com/content</div>
+                    </div>
+                    <div class="mock-body" style="background:#f8fafc">
+                        <div style="font-size:14px;font-weight:800;color:var(--text);margin-bottom:4px">🗂️ Nội dung
+                            trang web</div>
+                        <div style="font-size:11px;color:var(--text-muted);margin-bottom:16px">Chọn trang để chỉnh sửa
+                            nội dung</div>
+                        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
+                            <div style="background:#dbeafe;border:1px solid #bfdbfe;border-radius:12px;padding:14px">
+                                <div style="font-size:20px;margin-bottom:6px">🏠</div>
+                                <div style="font-size:12px;font-weight:700;color:var(--text)">Trang chủ</div>
+                                <div style="font-size:10px;color:var(--text-muted);margin-top:3px">Hero, Sản phẩm, Quy
+                                    trình…</div>
+                                <div style="margin-top:6px"><span class="badge badge-blue">5 sections</span></div>
+                            </div>
+                            <div style="background:#ede9fe;border:1px solid #ddd6fe;border-radius:12px;padding:14px">
+                                <div style="font-size:20px;margin-bottom:6px">ℹ️</div>
+                                <div style="font-size:12px;font-weight:700;color:var(--text)">Giới thiệu</div>
+                                <div style="font-size:10px;color:var(--text-muted);margin-top:3px">Câu chuyện, Đội ngũ,
+                                    CTA…</div>
+                                <div style="margin-top:6px"><span class="badge"
+                                        style="background:#ede9fe;color:#7c3aed">7 sections</span></div>
+                            </div>
+                            <div style="background:#d1fae5;border:1px solid #a7f3d0;border-radius:12px;padding:14px">
+                                <div style="font-size:20px;margin-bottom:6px">📞</div>
+                                <div style="font-size:12px;font-weight:700;color:var(--text)">Liên hệ & Footer</div>
+                                <div style="font-size:10px;color:var(--text-muted);margin-top:3px">Thông tin liên hệ,
+                                    Mạng XH…</div>
+                                <div style="margin-top:6px"><span class="badge badge-green">3 sections</span></div>
+                            </div>
+                            <div style="background:#fef3c7;border:1px solid #fde68a;border-radius:12px;padding:14px">
+                                <div style="font-size:20px;margin-bottom:6px">👥</div>
+                                <div style="font-size:12px;font-weight:700;color:var(--text)">Tuyển dụng</div>
+                                <div style="font-size:10px;color:var(--text-muted);margin-top:3px">Hero, Vị trí, Phúc
+                                    lợi, CTA</div>
+                                <div style="margin-top:6px"><span class="badge badge-amber">4 sections</span></div>
+                            </div>
+                            <div style="background:#fee2e2;border:1px solid #fecaca;border-radius:12px;padding:14px">
+                                <div style="font-size:20px;margin-bottom:6px">🔍</div>
+                                <div style="font-size:12px;font-weight:700;color:var(--text)">Xác minh TV</div>
+                                <div style="font-size:10px;color:var(--text-muted);margin-top:3px">Hero, Form xác minh,
+                                    Mẹo</div>
+                                <div style="margin-top:6px"><span class="badge"
+                                        style="background:#fee2e2;color:#dc2626">2 sections</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="steps">
+                    <div class="step">
+                        <div class="step-num">1</div>
+                        <div class="step-body">
+                            <strong>Chọn trang cần chỉnh sửa</strong>
+                            <p>Nhấn vào thẻ trang (ví dụ: "Trang chủ") để mở trình chỉnh sửa của trang đó.</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-num">2</div>
+                        <div class="step-body">
+                            <strong>Chọn section (phần) cần thay đổi</strong>
+                            <p>Mỗi trang có nhiều section. Ví dụ trang chủ có: Hero (banner đầu), Sản phẩm, Quy trình
+                                làm việc, Thống kê, Đánh giá KH.</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-num">3</div>
+                        <div class="step-body">
+                            <strong>Chỉnh sửa nội dung trong form</strong>
+                            <p>Điền tiêu đề, mô tả, chọn ảnh… tùy theo section đang chỉnh sửa.</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-num">4</div>
+                        <div class="step-body">
+                            <strong>Nhấn "Lưu thay đổi"</strong>
+                            <p>Website sẽ cập nhật nội dung mới ngay lập tức sau khi lưu thành công.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>📄 Danh sách các trang có thể chỉnh sửa</h3>
+                <div class="grid-2">
+                    <div class="highlight-box" style="padding:16px">
+                        <div style="font-size:16px;margin-bottom:8px">🏠 Trang chủ</div>
+                        <ul class="check">
+                            <li>Hero (banner chính + nút CTA)</li>
+                            <li>Danh sách sản phẩm bảo hiểm</li>
+                            <li>Quy trình làm việc 4 bước</li>
+                            <li>Thống kê số liệu</li>
+                            <li>Testimonials nổi bật</li>
+                        </ul>
+                    </div>
+                    <div class="highlight-box" style="padding:16px">
+                        <div style="font-size:16px;margin-bottom:8px">ℹ️ Giới thiệu</div>
+                        <ul class="check">
+                            <li>Câu chuyện công ty</li>
+                            <li>Sứ mệnh & Tầm nhìn</li>
+                            <li>Giá trị cốt lõi</li>
+                            <li>Đội ngũ nhân sự</li>
+                            <li>Lợi ích khi hợp tác</li>
+                            <li>CTA (kêu gọi hành động)</li>
+                        </ul>
+                    </div>
+                    <div class="highlight-box" style="padding:16px">
+                        <div style="font-size:16px;margin-bottom:8px">📞 Liên hệ & Footer</div>
+                        <ul class="check">
+                            <li>Địa chỉ văn phòng</li>
+                            <li>Số điện thoại, Email</li>
+                            <li>Giờ làm việc</li>
+                            <li>Link mạng xã hội</li>
+                        </ul>
+                    </div>
+                    <div class="highlight-box" style="padding:16px">
+                        <div style="font-size:16px;margin-bottom:8px">👥 Tuyển dụng</div>
+                        <ul class="check">
+                            <li>Banner tuyển dụng</li>
+                            <li>Vị trí đang tuyển</li>
+                            <li>Phúc lợi nhân viên</li>
+                            <li>CTA ứng tuyển</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <div class="divider"></div>
+
+            <!-- ═══ MEDIA ═══ -->
+            <section class="section" id="media">
+                <div class="section-header">
+                    <div class="section-icon" style="background:#fce7f3">🖼️</div>
+                    <div>
+                        <div class="section-title">Thư viện Ảnh</div>
+                        <div class="section-subtitle">Upload, quản lý và sử dụng ảnh trên website</div>
+                    </div>
+                </div>
+
+                <p>Tất cả ảnh dùng trên website đều phải được upload vào <strong>Thư viện ảnh</strong> trước. Từ đây bạn
+                    có thể tái sử dụng ảnh ở nhiều nơi mà không cần upload lại.</p>
+
+                <!-- Mock Media Page -->
+                <div class="mock-screen">
+                    <div class="mock-titlebar">
+                        <div class="mock-dot" style="background:#ff5f56"></div>
+                        <div class="mock-dot" style="background:#ffbd2e"></div>
+                        <div class="mock-dot" style="background:#27c93f"></div>
+                        <div class="mock-url">admin.vietpointservice.com/media</div>
+                    </div>
+                    <div class="mock-body" style="background:#f8fafc">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+                            <div style="font-size:14px;font-weight:800;color:var(--text)">🖼️ Thư viện ảnh</div>
+                            <button class="mock-btn mock-btn-primary">⬆️ Upload ảnh</button>
+                        </div>
+                        <!-- drop zone -->
+                        <div
+                            style="border:2px dashed #94a3b8;border-radius:12px;padding:24px;text-align:center;margin-bottom:16px;background:white">
+                            <div style="font-size:32px;margin-bottom:8px">🖼️</div>
+                            <div style="font-size:13px;font-weight:700;color:var(--text)">Kéo & thả ảnh vào đây</div>
+                            <div style="font-size:11px;color:var(--text-muted);margin-top:4px">hoặc nhấn để chọn file ·
+                                JPG, PNG, WebP · Tối đa 5MB</div>
+                        </div>
+                        <!-- image grid -->
+                        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px">
+                            <div
+                                style="aspect-ratio:1;background:linear-gradient(135deg,#dbeafe,#bfdbfe);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:24px;position:relative;border:1px solid var(--border)">
+                                🌄</div>
+                            <div
+                                style="aspect-ratio:1;background:linear-gradient(135deg,#d1fae5,#a7f3d0);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:24px;border:1px solid var(--border)">
+                                🏢</div>
+                            <div
+                                style="aspect-ratio:1;background:linear-gradient(135deg,#fce7f3,#fbcfe8);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:24px;border:1px solid var(--border)">
+                                👨‍👩‍👧</div>
+                            <div
+                                style="aspect-ratio:1;background:linear-gradient(135deg,#fef3c7,#fde68a);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:24px;border:1px solid var(--border)">
+                                📊</div>
+                            <div
+                                style="aspect-ratio:1;background:linear-gradient(135deg,#ede9fe,#ddd6fe);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:24px;border:1px solid var(--border)">
+                                💼</div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>⬆️ Cách upload ảnh mới</h3>
+                <div class="steps">
+                    <div class="step">
+                        <div class="step-num">1</div>
+                        <div class="step-body">
+                            <strong>Kéo thả ảnh vào vùng upload</strong>
+                            <p>Kéo file ảnh từ máy tính và thả vào vùng có đường viền chấm màu xám. Ảnh sẽ bắt đầu
+                                upload ngay.</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-num">2</div>
+                        <div class="step-body">
+                            <strong>Hoặc nhấn nút "Upload ảnh"</strong>
+                            <p>Nhấn nút màu xanh → cửa sổ chọn file mở ra → chọn ảnh từ máy tính → nhấn Open/Mở.</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-num">3</div>
+                        <div class="step-body">
+                            <strong>Chờ upload hoàn thành</strong>
+                            <p>Ảnh sẽ xuất hiện trong lưới ảnh bên dưới sau khi upload thành công. Quá trình này chỉ vài
+                                giây.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <h3 style="margin-top:0">🛠️ Thao tác với ảnh đã có</h3>
+                    <div class="feature-row">
+                        <div class="feature-row-icon" style="background:#d1fae5">📋</div>
+                        <div class="feature-row-body">
+                            <strong>Sao chép link ảnh</strong>
+                            <span>Nhấp vào ảnh → nhấn icon copy → link ảnh được sao chép vào clipboard để dán vào bài
+                                viết</span>
+                        </div>
+                    </div>
+                    <div class="feature-row">
+                        <div class="feature-row-icon" style="background:#fee2e2">🗑️</div>
+                        <div class="feature-row-body">
+                            <strong>Xóa ảnh</strong>
+                            <span>Hover chuột vào ảnh → nhấn icon thùng rác đỏ → xác nhận xóa. Lưu ý: ảnh xóa sẽ mất
+                                khỏi mọi nơi đang dùng</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="callout danger">
+                    <span class="callout-icon">🚨</span>
+                    <div class="callout-body">
+                        <strong>Cảnh báo quan trọng khi xóa ảnh</strong>
+                        <p>Nếu bạn xóa một ảnh đang được dùng trong bài viết hoặc trang nào đó, <strong>ảnh đó sẽ biến
+                                mất trên website</strong>. Kiểm tra kỹ trước khi xóa.</p>
+                    </div>
+                </div>
+
+                <div class="callout tip">
+                    <span class="callout-icon">💡</span>
+                    <div class="callout-body">
+                        <strong>Định dạng ảnh khuyến nghị</strong>
+                        <p>Sử dụng ảnh <strong>JPG hoặc WebP</strong> để tải nhanh hơn. Ảnh bìa blog nên có tỉ lệ
+                            <strong>16:9</strong> (ví dụ: 1200×675px). Kích thước tối đa: <strong>5MB mỗi ảnh</strong>.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <div class="divider"></div>
+
+            <!-- ═══ LEADS ═══ -->
+            <section class="section" id="leads">
+                <div class="section-header">
+                    <div class="section-icon" style="background:#ede9fe">👥</div>
+                    <div>
+                        <div class="section-title">Khách hàng Liên hệ (Leads)</div>
+                        <div class="section-subtitle">Xem và xử lý danh sách khách hàng đã điền form</div>
+                    </div>
+                </div>
+
+                <p>Mỗi khi khách hàng điền form liên hệ trên website, thông tin của họ sẽ tự động xuất hiện trong phần
+                    <strong>"Khách hàng liên hệ"</strong>. Đây là danh sách <strong>leads (tiềm năng)</strong> cần được
+                    theo dõi và xử lý.</p>
+
+                <!-- Mock Leads Page -->
+                <div class="mock-screen">
+                    <div class="mock-titlebar">
+                        <div class="mock-dot" style="background:#ff5f56"></div>
+                        <div class="mock-dot" style="background:#ffbd2e"></div>
+                        <div class="mock-dot" style="background:#27c93f"></div>
+                        <div class="mock-url">admin.vietpointservice.com/leads</div>
+                    </div>
+                    <div class="mock-body" style="background:#f8fafc">
+                        <div style="margin-bottom:14px">
+                            <div style="font-size:14px;font-weight:800;color:var(--text)">👥 Khách hàng liên hệ</div>
+                            <div style="font-size:11px;color:var(--text-muted)">Danh sách khách hàng đã điền form liên
+                                hệ</div>
+                        </div>
+                        <!-- stats -->
+                        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px">
+                            <div class="mock-stat" style="border:1px solid var(--border)">
+                                <div class="mock-stat-icon" style="background:#dbeafe">👥</div>
+                                <div>
+                                    <div class="mock-stat-val" style="color:#2563eb">47</div>
+                                    <div class="mock-stat-label">Tổng liên hệ</div>
+                                </div>
+                            </div>
+                            <div class="mock-stat" style="border:1px solid var(--border)">
+                                <div class="mock-stat-icon" style="background:#fef3c7">⏳</div>
+                                <div>
+                                    <div class="mock-stat-val" style="color:#d97706">12</div>
+                                    <div class="mock-stat-label">Chưa xử lý</div>
+                                </div>
+                            </div>
+                            <div class="mock-stat" style="border:1px solid var(--border)">
+                                <div class="mock-stat-icon" style="background:#d1fae5">✅</div>
+                                <div>
+                                    <div class="mock-stat-val" style="color:#059669">35</div>
+                                    <div class="mock-stat-label">Đã xử lý</div>
+                                </div>
+                            </div>
+                            <div class="mock-stat" style="border:1px solid var(--border)">
+                                <div class="mock-stat-icon" style="background:#ede9fe">📱</div>
+                                <div>
+                                    <div class="mock-stat-val" style="color:#7c3aed">41</div>
+                                    <div class="mock-stat-label">Có SĐT</div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- table -->
+                        <div style="background:white;border:1px solid var(--border);border-radius:10px;overflow:hidden">
+                            <div
+                                style="padding:10px 12px;border-bottom:1px solid var(--border);font-size:11px;font-weight:700;color:var(--text)">
+                                📋 Danh sách liên hệ</div>
+                            <table class="mock-table">
+                                <thead>
+                                    <tr>
+                                        <th>Họ tên</th>
+                                        <th>Email</th>
+                                        <th>Điện thoại</th>
+                                        <th>Tin nhắn</th>
+                                        <th>Ngày</th>
+                                        <th>Xử lý</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>Nguyễn Văn An</strong></td>
+                                        <td>an@gmail.com</td>
+                                        <td>0901234567</td>
+                                        <td
+                                            style="max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+                                            Muốn tư vấn IUL...</td>
+                                        <td>22/05/2026</td>
+                                        <td><span class="badge badge-amber">Chưa xử lý</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Trần Thị Bình</strong></td>
+                                        <td>binh@gmail.com</td>
+                                        <td>0912345678</td>
+                                        <td
+                                            style="max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+                                            Cần thông tin...</td>
+                                        <td>21/05/2026</td>
+                                        <td><span class="badge badge-green">Đã xử lý ✓</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Lê Minh Cường</strong></td>
+                                        <td>cuong@gmail.com</td>
+                                        <td>—</td>
+                                        <td
+                                            style="max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+                                            Hỏi về Term Life</td>
+                                        <td>20/05/2026</td>
+                                        <td><span class="badge badge-green">Đã xử lý ✓</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="steps">
+                    <div class="step">
+                        <div class="step-num">1</div>
+                        <div class="step-body">
+                            <strong>Xem thông tin chi tiết của khách</strong>
+                            <p>Nhấp vào hàng của khách hàng để xem đầy đủ tin nhắn và thông tin liên hệ.</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-num">2</div>
+                        <div class="step-body">
+                            <strong>Liên hệ lại với khách</strong>
+                            <p>Dùng số điện thoại hoặc email trong bảng để liên hệ trực tiếp với khách hàng qua điện
+                                thoại/email thông thường.</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-num">3</div>
+                        <div class="step-body">
+                            <strong>Đánh dấu "Đã xử lý"</strong>
+                            <p>Sau khi đã liên hệ với khách, nhấn nút <strong>"Đánh dấu đã xử lý"</strong> (hoặc toggle
+                                switch) để chuyển trạng thái từ <span class="badge badge-amber">Chưa xử lý</span> thành
+                                <span class="badge badge-green">Đã xử lý</span>.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="callout success">
+                    <span class="callout-icon">✅</span>
+                    <div class="callout-body">
+                        <strong>Quy trình làm việc tốt nhất</strong>
+                        <p>Kiểm tra danh sách leads <strong>mỗi ngày</strong>. Xử lý các leads <span
+                                class="badge badge-amber">Chưa xử lý</span> càng sớm càng tốt — khách hàng liên hệ trong
+                            vòng 24h có tỉ lệ chốt cao hơn đáng kể.</p>
+                    </div>
+                </div>
+            </section>
+
+            <div class="divider"></div>
+
+            <!-- ═══ TESTIMONIALS ═══ -->
+            <section class="section" id="testimonials">
+                <div class="section-header">
+                    <div class="section-icon" style="background:#fef3c7">⭐</div>
+                    <div>
+                        <div class="section-title">Đánh giá Khách hàng</div>
+                        <div class="section-subtitle">Quản lý testimonials hiển thị trên website</div>
+                    </div>
+                </div>
+
+                <p>Phần <strong>Đánh giá khách hàng</strong> (Testimonials) chứa những nhận xét, lời chia sẻ của khách
+                    hàng đã sử dụng dịch vụ. Bạn có thể kiểm soát đánh giá nào hiển thị trên trang chủ.</p>
+
+                <!-- Mock Testimonials Page -->
+                <div class="mock-screen">
+                    <div class="mock-titlebar">
+                        <div class="mock-dot" style="background:#ff5f56"></div>
+                        <div class="mock-dot" style="background:#ffbd2e"></div>
+                        <div class="mock-dot" style="background:#27c93f"></div>
+                        <div class="mock-url">admin.vietpointservice.com/testimonials</div>
+                    </div>
+                    <div class="mock-body" style="background:#f8fafc">
+                        <div style="margin-bottom:14px">
+                            <div style="font-size:14px;font-weight:800;color:var(--text)">⭐ Đánh giá khách hàng</div>
+                            <div style="font-size:11px;color:var(--text-muted)">Quản lý testimonials hiển thị trên
+                                website</div>
+                        </div>
+                        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px">
+                            <div class="mock-stat" style="border:1px solid var(--border)">
+                                <div class="mock-stat-icon" style="background:#dbeafe">💬</div>
+                                <div>
+                                    <div class="mock-stat-val" style="color:#2563eb">15</div>
+                                    <div class="mock-stat-label">Tổng đánh giá</div>
+                                </div>
+                            </div>
+                            <div class="mock-stat" style="border:1px solid var(--border)">
+                                <div class="mock-stat-icon" style="background:#d1fae5">✅</div>
+                                <div>
+                                    <div class="mock-stat-val" style="color:#059669">10</div>
+                                    <div class="mock-stat-label">Đang hiển thị</div>
+                                </div>
+                            </div>
+                            <div class="mock-stat" style="border:1px solid var(--border)">
+                                <div class="mock-stat-icon" style="background:#f1f5f9">🙈</div>
+                                <div>
+                                    <div class="mock-stat-val" style="color:var(--slate)">5</div>
+                                    <div class="mock-stat-label">Đã ẩn</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                            <div
+                                style="background:white;border:1px solid var(--border);border-radius:12px;padding:14px">
+                                <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+                                    <div style="display:flex;align-items:center;gap:8px">
+                                        <div
+                                            style="width:32px;height:32px;background:#dbeafe;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:#2563eb">
+                                            NA</div>
+                                        <div>
+                                            <div style="font-size:12px;font-weight:700">Nguyễn Văn A</div>
+                                            <div style="font-size:10px;color:var(--text-muted)">Khách hàng · TX</div>
+                                        </div>
+                                    </div>
+                                    <span class="badge badge-green">Hiển thị</span>
+                                </div>
+                                <div style="font-size:11px;color:var(--slate);font-style:italic">"Dịch vụ tuyệt vời, tư
+                                    vấn viên rất nhiệt tình và chuyên nghiệp!"</div>
+                                <div style="display:flex;gap:4px;margin-top:8px">⭐⭐⭐⭐⭐</div>
+                            </div>
+                            <div
+                                style="background:white;border:1px solid var(--border);border-radius:12px;padding:14px;opacity:0.6">
+                                <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+                                    <div style="display:flex;align-items:center;gap:8px">
+                                        <div
+                                            style="width:32px;height:32px;background:#f1f5f9;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:var(--slate)">
+                                            TB</div>
+                                        <div>
+                                            <div style="font-size:12px;font-weight:700">Trần Thị B</div>
+                                            <div style="font-size:10px;color:var(--text-muted)">Khách hàng · CA</div>
+                                        </div>
+                                    </div>
+                                    <span class="badge badge-slate">Đã ẩn</span>
+                                </div>
+                                <div style="font-size:11px;color:var(--slate);font-style:italic">"Rất hài lòng với chính
+                                    sách bảo hiểm được tư vấn."</div>
+                                <div style="display:flex;gap:4px;margin-top:8px">⭐⭐⭐⭐⭐</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <h3 style="margin-top:0">🔧 Quản lý hiển thị Testimonials</h3>
+                    <div class="feature-row">
+                        <div class="feature-row-icon" style="background:#d1fae5">👁️</div>
+                        <div class="feature-row-body">
+                            <strong>Hiện / Ẩn đánh giá</strong>
+                            <span>Mỗi testimonial có nút bật/tắt. Khi <span class="badge badge-green">Hiển thị</span> →
+                                xuất hiện trên trang chủ. Khi <span class="badge badge-slate">Đã ẩn</span> → không hiển
+                                thị nhưng không bị xóa</span>
+                        </div>
+                    </div>
+                    <div class="feature-row">
+                        <div class="feature-row-icon" style="background:#fef3c7">✏️</div>
+                        <div class="feature-row-body">
+                            <strong>Chỉnh sửa nội dung</strong>
+                            <span>Có thể sửa tên, nội dung nhận xét, số sao, tiêu đề của khách hàng</span>
+                        </div>
+                    </div>
+                    <div class="feature-row">
+                        <div class="feature-row-icon" style="background:#fee2e2">🗑️</div>
+                        <div class="feature-row-body">
+                            <strong>Xóa đánh giá</strong>
+                            <span>Xóa vĩnh viễn khỏi hệ thống — thao tác này không thể hoàn tác</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="divider"></div>
+
+            <!-- ═══ BẢO HIỂM ═══ -->
+            <section class="section" id="bao-hiem">
+                <div class="section-header">
+                    <div class="section-icon" style="background:#dbeafe">🛡️</div>
+                    <div>
+                        <div class="section-title">Trang Bảo hiểm</div>
+                        <div class="section-subtitle">Quản lý nội dung các trang sản phẩm bảo hiểm</div>
+                    </div>
+                </div>
+
+                <p>Menu <strong>"Bảo hiểm"</strong> trong thanh bên trái gồm 4 trang sản phẩm. Mỗi trang có thể chỉnh
+                    sửa độc lập.</p>
+
+                <div class="grid-2">
+                    <div class="highlight-box" style="padding:16px">
+                        <div style="font-size:22px;margin-bottom:8px">⚡</div>
+                        <h4 style="margin-bottom:6px">IUL Secrets</h4>
+                        <p style="font-size:13px;color:var(--text-muted);margin:0">Trang giới thiệu sản phẩm Indexed
+                            Universal Life Insurance — bao gồm hero, lợi ích, FAQ.</p>
+                    </div>
+                    <div class="highlight-box" style="padding:16px">
+                        <div style="font-size:22px;margin-bottom:8px">👶</div>
+                        <h4 style="margin-bottom:6px">IUL Cho Trẻ (Kids IUL)</h4>
+                        <p style="font-size:13px;color:var(--text-muted);margin:0">Trang giới thiệu bảo hiểm IUL dành
+                            riêng cho trẻ em.</p>
+                    </div>
+                    <div class="highlight-box" style="padding:16px">
+                        <div style="font-size:22px;margin-bottom:8px">📈</div>
+                        <h4 style="margin-bottom:6px">Max-Funded IUL</h4>
+                        <p style="font-size:13px;color:var(--text-muted);margin:0">Trang về chiến lược đầu tư tối đa với
+                            bảo hiểm IUL.</p>
+                    </div>
+                    <div class="highlight-box" style="padding:16px">
+                        <div style="font-size:22px;margin-bottom:8px">🕐</div>
+                        <h4 style="margin-bottom:6px">Term Life Insurance</h4>
+                        <p style="font-size:13px;color:var(--text-muted);margin:0">Trang về bảo hiểm nhân thọ kỳ hạn —
+                            đơn giản, giá phải chăng.</p>
+                    </div>
+                </div>
+
+                <div class="steps">
+                    <div class="step">
+                        <div class="step-num">1</div>
+                        <div class="step-body">
+                            <strong>Vào menu "Bảo hiểm" → chọn sản phẩm</strong>
+                            <p>Ví dụ: nhấn "IUL Secrets" để chỉnh sửa trang IUL.</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-num">2</div>
+                        <div class="step-body">
+                            <strong>Chỉnh sửa từng section</strong>
+                            <p>Mỗi trang bảo hiểm chia thành nhiều phần: Hero (banner), Lợi ích, FAQ, CTA. Mở phần cần
+                                sửa và điền nội dung mới.</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-num">3</div>
+                        <div class="step-body">
+                            <strong>Lưu thay đổi</strong>
+                            <p>Nhấn nút <strong>"Lưu"</strong> để cập nhật. Trang web sẽ hiển thị nội dung mới ngay lập
+                                tức.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="divider"></div>
+
+            <!-- ═══ CHĂM SÓC KH ═══ -->
+            <section class="section" id="cham-soc">
+                <div class="section-header">
+                    <div class="section-icon" style="background:#d1fae5">💙</div>
+                    <div>
+                        <div class="section-title">Chăm sóc Khách hàng</div>
+                        <div class="section-subtitle">Quản lý nội dung hỗ trợ sau bán hàng</div>
+                    </div>
+                </div>
+
+                <p>Phần <strong>Chăm sóc KH</strong> bao gồm các trang hỗ trợ khách hàng sau khi đã mua bảo hiểm. Có 4
+                    mục con:</p>
+
+                <div class="grid-2">
+                    <div class="highlight-box" style="padding:16px">
+                        <div style="font-size:22px;margin-bottom:8px">❤️</div>
+                        <h4 style="margin-bottom:6px">Câu chuyện Khách hàng</h4>
+                        <p style="font-size:13px;color:var(--text-muted);margin:0">Các câu chuyện thực tế từ khách hàng
+                            — thêm, chỉnh sửa, ẩn/hiện từng câu chuyện.</p>
+                    </div>
+                    <div class="highlight-box" style="padding:16px">
+                        <div style="font-size:22px;margin-bottom:8px">📖</div>
+                        <h4 style="margin-bottom:6px">Hướng dẫn sử dụng</h4>
+                        <p style="font-size:13px;color:var(--text-muted);margin:0">Tài liệu hướng dẫn khách hàng dùng
+                            bảo hiểm: đóng phí, tra cứu quyền lợi…</p>
+                    </div>
+                    <div class="highlight-box" style="padding:16px">
+                        <div style="font-size:22px;margin-bottom:8px">📋</div>
+                        <h4 style="margin-bottom:6px">Quyền lợi Bảo hiểm</h4>
+                        <p style="font-size:13px;color:var(--text-muted);margin:0">Thông tin về quy trình bồi thường,
+                            điều kiện nhận quyền lợi.</p>
+                    </div>
+                    <div class="highlight-box" style="padding:16px">
+                        <div style="font-size:22px;margin-bottom:8px">🏆</div>
+                        <h4 style="margin-bottom:6px">Chương trình Ưu tiên</h4>
+                        <p style="font-size:13px;color:var(--text-muted);margin:0">Các chương trình ưu đãi, phần thưởng
+                            dành cho khách hàng thân thiết.</p>
+                    </div>
+                </div>
+            </section>
+
+            <div class="divider"></div>
+
+            <!-- ═══ NHÂN VIÊN ═══ -->
+            <section class="section" id="nhan-vien">
+                <div class="section-header">
+                    <div class="section-icon" style="background:#fef3c7">👤</div>
+                    <div>
+                        <div class="section-title">Quản lý Nhân viên</div>
+                        <div class="section-subtitle">Cấp và quản lý tài khoản nhân viên (Chỉ Admin)</div>
+                    </div>
+                </div>
+
+                <div class="callout warn">
+                    <span class="callout-icon">⚠️</span>
+                    <div class="callout-body">
+                        <strong>Chỉ dành cho Quản trị viên cấp cao</strong>
+                        <p>Phần này chỉ hiển thị với tài khoản có quyền <strong>Admin</strong>. Nhân viên thông thường
+                            không thấy mục này.</p>
+                    </div>
+                </div>
+
+                <p>Trang <strong>Nhân viên</strong> cho phép quản trị viên xem danh sách tất cả nhân viên có thể đăng
+                    nhập vào hệ thống admin.</p>
+
+                <!-- Mock Agents Page -->
+                <div class="mock-screen">
+                    <div class="mock-titlebar">
+                        <div class="mock-dot" style="background:#ff5f56"></div>
+                        <div class="mock-dot" style="background:#ffbd2e"></div>
+                        <div class="mock-dot" style="background:#27c93f"></div>
+                        <div class="mock-url">admin.vietpointservice.com/agents</div>
+                    </div>
+                    <div class="mock-body" style="background:#f8fafc">
+                        <div style="margin-bottom:14px">
+                            <div style="font-size:14px;font-weight:800;color:var(--text)">👤 Nhân viên</div>
+                            <div style="font-size:11px;color:var(--text-muted)">Danh sách nhân viên trực thuộc — có thể
+                                đăng nhập vào hệ thống admin</div>
+                        </div>
+                        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px">
+                            <div class="mock-stat" style="border:1px solid var(--border)">
+                                <div class="mock-stat-icon" style="background:#dbeafe">👥</div>
+                                <div>
+                                    <div class="mock-stat-val" style="color:#2563eb">5</div>
+                                    <div class="mock-stat-label">Tổng NV</div>
+                                </div>
+                            </div>
+                            <div class="mock-stat" style="border:1px solid var(--border)">
+                                <div class="mock-stat-icon" style="background:#d1fae5">🟢</div>
+                                <div>
+                                    <div class="mock-stat-val" style="color:#059669">3</div>
+                                    <div class="mock-stat-label">Đã đăng nhập</div>
+                                </div>
+                            </div>
+                            <div class="mock-stat" style="border:1px solid var(--border)">
+                                <div class="mock-stat-icon" style="background:#f1f5f9">⚪</div>
+                                <div>
+                                    <div class="mock-stat-val" style="color:var(--slate)">2</div>
+                                    <div class="mock-stat-label">Chưa đăng nhập</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="background:white;border:1px solid var(--border);border-radius:10px;overflow:hidden">
+                            <table class="mock-table">
+                                <thead>
+                                    <tr>
+                                        <th>Nhân viên</th>
+                                        <th>Email</th>
+                                        <th>Quyền</th>
+                                        <th>Đăng nhập lần cuối</th>
+                                        <th>Hành động</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <div style="display:flex;align-items:center;gap:6px">
+                                                <div
+                                                    style="width:24px;height:24px;background:#dbeafe;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#2563eb">
+                                                    NA</div>Nguyễn Admin
+                                            </div>
+                                        </td>
+                                        <td>admin@vietpoint.com</td>
+                                        <td><span class="badge" style="background:#ede9fe;color:#7c3aed">🛡️
+                                                Admin</span></td>
+                                        <td>22/05/2026</td>
+                                        <td>—</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div style="display:flex;align-items:center;gap:6px">
+                                                <div
+                                                    style="width:24px;height:24px;background:#d1fae5;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#059669">
+                                                    TV</div>Trần Viên
+                                            </div>
+                                        </td>
+                                        <td>vien@vietpoint.com</td>
+                                        <td><span class="badge badge-slate">👤 Nhân viên</span></td>
+                                        <td>20/05/2026</td>
+                                        <td><button class="mock-btn mock-btn-red"
+                                                style="font-size:10px;padding:4px 8px">🗑️ Xóa</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div style="display:flex;align-items:center;gap:6px">
+                                                <div
+                                                    style="width:24px;height:24px;background:#f1f5f9;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--slate)">
+                                                    LM</div>Lê Mới
+                                            </div>
+                                        </td>
+                                        <td>moi@vietpoint.com</td>
+                                        <td><span class="badge badge-slate">👤 Nhân viên</span></td>
+                                        <td>Chưa đăng nhập</td>
+                                        <td><button class="mock-btn mock-btn-red"
+                                                style="font-size:10px;padding:4px 8px">🗑️ Xóa</button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="callout danger">
+                    <span class="callout-icon">🚨</span>
+                    <div class="callout-body">
+                        <strong>Lưu ý khi xóa nhân viên</strong>
+                        <p>Xóa tài khoản nhân viên sẽ <strong>vô hiệu hóa quyền truy cập admin</strong> của họ ngay lập
+                            tức. Thao tác này không thể hoàn tác. Hãy chắc chắn trước khi xóa.</p>
+                    </div>
+                </div>
+            </section>
+
+            <div class="divider"></div>
+
+            <!-- ═══ CÀI ĐẶT ═══ -->
+            <section class="section" id="cai-dat">
+                <div class="section-header">
+                    <div class="section-icon" style="background:#f1f5f9">⚙️</div>
+                    <div>
+                        <div class="section-title">Cài đặt Hệ thống</div>
+                        <div class="section-subtitle">Quản lý tài khoản và cấu hình website</div>
+                    </div>
+                </div>
+
+                <p>Truy cập <strong>Cài đặt</strong> ở cuối menu bên trái để quản lý thông tin tài khoản cá nhân và cấu
+                    hình toàn bộ website.</p>
+
+                <div class="grid-2">
+                    <div class="highlight-box" style="padding:16px">
+                        <div style="font-size:22px;margin-bottom:8px">👤</div>
+                        <h4 style="margin-bottom:8px">Thông tin tài khoản</h4>
+                        <ul class="check">
+                            <li>Xem email và User ID</li>
+                            <li>Kiểm tra vai trò (Admin / Nhân viên)</li>
+                            <li>Ngày tham gia hệ thống</li>
+                        </ul>
+                    </div>
+                    <div class="highlight-box" style="padding:16px">
+                        <div style="font-size:22px;margin-bottom:8px">🌐</div>
+                        <h4 style="margin-bottom:8px">Thông tin Website</h4>
+                        <ul class="check">
+                            <li>Tên website</li>
+                            <li>Mô tả website (SEO)</li>
+                            <li>Thông tin liên hệ chung</li>
+                        </ul>
+                    </div>
+                    <div class="highlight-box" style="padding:16px">
+                        <div style="font-size:22px;margin-bottom:8px">🔑</div>
+                        <h4 style="margin-bottom:8px">Đổi mật khẩu</h4>
+                        <ul class="check">
+                            <li>Nhập mật khẩu cũ để xác nhận</li>
+                            <li>Nhập mật khẩu mới</li>
+                            <li>Xác nhận mật khẩu mới</li>
+                        </ul>
+                    </div>
+                    <div class="highlight-box" style="padding:16px">
+                        <div style="font-size:22px;margin-bottom:8px">📧</div>
+                        <h4 style="margin-bottom:8px">Email Thông báo</h4>
+                        <ul class="check">
+                            <li>Cấu hình email nhận thông báo khách liên hệ mới</li>
+                            <li>Bật/tắt thông báo tự động</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3>🔑 Cách đổi mật khẩu</h3>
+                <div class="steps">
+                    <div class="step">
+                        <div class="step-num">1</div>
+                        <div class="step-body">
+                            <strong>Vào Cài đặt → Đổi mật khẩu</strong>
+                            <p>Kéo xuống phần "Đổi mật khẩu" trong trang Cài đặt.</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-num">2</div>
+                        <div class="step-body">
+                            <strong>Nhập mật khẩu hiện tại</strong>
+                            <p>Điền mật khẩu bạn đang dùng vào ô "Mật khẩu hiện tại" để xác nhận danh tính.</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-num">3</div>
+                        <div class="step-body">
+                            <strong>Nhập mật khẩu mới 2 lần</strong>
+                            <p>Điền mật khẩu mới vào ô "Mật khẩu mới" và "Xác nhận mật khẩu". Mật khẩu phải khớp nhau.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-num">4</div>
+                        <div class="step-body">
+                            <strong>Nhấn "Đổi mật khẩu"</strong>
+                            <p>Hệ thống xác nhận thành công → đăng nhập lại bằng mật khẩu mới.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="callout tip">
+                    <span class="callout-icon">🔒</span>
+                    <div class="callout-body">
+                        <strong>Mật khẩu mạnh là gì?</strong>
+                        <p>Mật khẩu tốt nên có ít nhất <strong>8 ký tự</strong>, kết hợp chữ hoa, chữ thường, số và ký
+                            tự đặc biệt. Ví dụ: <kbd>VietPoint@2026!</kbd></p>
+                    </div>
+                </div>
+            </section>
+
+            <div class="divider"></div>
+
+            <!-- ═══ FAQ ═══ -->
+            <section class="section" id="faq">
+                <div class="section-header">
+                    <div class="section-icon" style="background:#fce7f3">❓</div>
+                    <div>
+                        <div class="section-title">Câu hỏi Thường gặp</div>
+                        <div class="section-subtitle">Giải đáp các thắc mắc phổ biến</div>
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <div class="feature-row" style="padding-top:0">
+                        <div class="feature-row-icon" style="background:#fef3c7;font-size:20px">❓</div>
+                        <div class="feature-row-body">
+                            <strong>Tôi lưu bài viết rồi nhưng website chưa thấy thay đổi?</strong>
+                            <span>Hãy <strong>tải lại trang website</strong> bằng phím <kbd>Ctrl+Shift+R</kbd> (Windows)
+                                hoặc <kbd>Cmd+Shift+R</kbd> (Mac). Trình duyệt có thể đang lưu cache cũ.</span>
+                        </div>
+                    </div>
+                    <div class="feature-row">
+                        <div class="feature-row-icon" style="background:#fef3c7;font-size:20px">❓</div>
+                        <div class="feature-row-body">
+                            <strong>Tôi vô tình xóa nhầm bài viết, lấy lại được không?</strong>
+                            <span>Dữ liệu xóa không thể khôi phục tự động. Hãy liên hệ nhà phát triển sớm nhất có thể để
+                                kiểm tra xem có thể khôi phục từ backup không.</span>
+                        </div>
+                    </div>
+                    <div class="feature-row">
+                        <div class="feature-row-icon" style="background:#fef3c7;font-size:20px">❓</div>
+                        <div class="feature-row-body">
+                            <strong>Upload ảnh bị lỗi "File quá lớn"?</strong>
+                            <span>Ảnh vượt quá <strong>5MB</strong>. Hãy nén ảnh trước bằng công cụ online như
+                                <strong>squoosh.app</strong> hoặc <strong>tinypng.com</strong> (miễn phí) rồi upload
+                                lại.</span>
+                        </div>
+                    </div>
+                    <div class="feature-row">
+                        <div class="feature-row-icon" style="background:#fef3c7;font-size:20px">❓</div>
+                        <div class="feature-row-body">
+                            <strong>Trang "Nhân viên" không hiển thị với tôi?</strong>
+                            <span>Trang này chỉ dành cho tài khoản có quyền <strong>Admin</strong>. Tài khoản nhân viên
+                                thông thường sẽ không thấy mục này.</span>
+                        </div>
+                    </div>
+                    <div class="feature-row">
+                        <div class="feature-row-icon" style="background:#fef3c7;font-size:20px">❓</div>
+                        <div class="feature-row-body">
+                            <strong>Làm thế nào để xuất bản/ẩn bài viết nhanh?</strong>
+                            <span>Trong danh sách blog, mỗi bài có nút <strong>toggle (bật/tắt)</strong> hoặc có thể vào
+                                chỉnh sửa bài và đổi trạng thái trong phần Cài đặt bài viết.</span>
+                        </div>
+                    </div>
+                    <div class="feature-row">
+                        <div class="feature-row-icon" style="background:#fef3c7;font-size:20px">❓</div>
+                        <div class="feature-row-body">
+                            <strong>Tôi có thể xem trước bài viết trước khi xuất bản không?</strong>
+                            <span>Có! Khi đang chỉnh sửa bài, nhấn nút <strong>"Lưu nháp"</strong> trước. Sau đó vào
+                                website và thêm <kbd>?preview=true</kbd> vào cuối URL để xem. Hoặc hỏi nhà phát triển
+                                cách xem preview.</span>
+                        </div>
+                    </div>
+                    <div class="feature-row">
+                        <div class="feature-row-icon" style="background:#fef3c7;font-size:20px">❓</div>
+                        <div class="feature-row-body">
+                            <strong>Bài viết cần có nội dung tiếng Anh không?</strong>
+                            <span>Website hỗ trợ song ngữ. Nếu bỏ trống tiếng Anh, hệ thống sẽ dùng nội dung tiếng Việt
+                                thay thế (hoặc để trống trên phiên bản EN). Khuyến khích điền cả hai.</span>
+                        </div>
+                    </div>
+                    <div class="feature-row" style="border-bottom:none">
+                        <div class="feature-row-icon" style="background:#fef3c7;font-size:20px">❓</div>
+                        <div class="feature-row-body">
+                            <strong>Đăng xuất ở đâu?</strong>
+                            <span>Cuộn xuống cuối menu bên trái, nhấn <strong>"Đăng xuất"</strong> (icon mũi tên ra
+                                ngoài). Luôn đăng xuất khi dùng máy tính chung để bảo mật.</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="divider"></div>
+
+            <!-- FOOTER -->
+            <div style="text-align:center;padding:32px 0;color:var(--text-muted)">
+                <div style="font-size:28px;margin-bottom:12px">🔷</div>
+                <div style="font-weight:700;font-size:16px;color:var(--text);margin-bottom:6px">VietPoint Service Admin
+                </div>
+                <div style="font-size:13px">Tài liệu hướng dẫn sử dụng nội bộ · Cập nhật tháng 5/2026</div>
+                <div style="font-size:12px;margin-top:8px">Nếu cần hỗ trợ thêm, liên hệ nhà phát triển hoặc quản trị
+                    viên hệ thống.</div>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        // Highlight active TOC item on scroll
+        const sections = document.querySelectorAll('section[id]');
+        const tocLinks = document.querySelectorAll('.toc a');
+
+        function updateToc() {
+            let active = '';
+            sections.forEach(s => {
+                const top = s.getBoundingClientRect().top;
+                if (top <= 120) active = s.id;
+            });
+            tocLinks.forEach(a => {
+                a.style.background = '';
+                a.style.color = '';
+                a.style.borderLeftColor = 'transparent';
+                if (a.getAttribute('href') === '#' + active) {
+                    a.style.background = '#dbeafe';
+                    a.style.color = '#1d4ed8';
+                    a.style.borderLeftColor = '#2563eb';
+                }
+            });
+        }
+
+        window.addEventListener('scroll', updateToc, { passive: true });
+        updateToc();
+
+        // Smooth scroll
+        tocLinks.forEach(a => {
+            a.addEventListener('click', e => {
+                e.preventDefault();
+                const id = a.getAttribute('href').slice(1);
+                document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
+    </script>
+
+</body>
+
+</html>
