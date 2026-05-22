@@ -1,6 +1,8 @@
 import { createClient } from "@/utils/supabase/server";
-import { Shield, Mail, Key } from "lucide-react";
+import { Shield, Mail, Key, Globe, Bell, User } from "lucide-react";
 import ChangePasswordForm from "./ChangePasswordForm";
+import SiteSettingsForm from "./SiteSettingsForm";
+import EmailSettingsForm from "./EmailSettingsForm";
 
 export default async function SettingsPage() {
   const supabase = await createClient();
@@ -18,62 +20,80 @@ export default async function SettingsPage() {
     : "—";
 
   return (
-    <div className="space-y-6 max-w-2xl">
+    <div className="space-y-5 max-w-2xl">
       <div>
-        <h1 className="text-xl font-bold text-slate-800">Cài đặt tài khoản</h1>
+        <h1 className="text-xl font-bold text-slate-800">Cài đặt</h1>
         <p className="text-sm text-slate-500 mt-0.5">
-          Quản lý thông tin và bảo mật tài khoản
+          Quản lý thông tin tài khoản và cấu hình hệ thống
         </p>
       </div>
 
-      {/* Profile */}
-      <div className="bg-white rounded-2xl border border-slate-100 p-6">
-        <h2 className="text-sm font-semibold text-slate-700 mb-4">Hồ sơ</h2>
-        <div className="flex items-center gap-4">
-          <div className="w-14 h-14 bg-blue-600 rounded-2xl flex items-center justify-center text-white text-lg font-bold">
+      {/* ── Thông tin tài khoản ── */}
+      <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
+        <div className="flex items-center gap-2 px-6 py-4 border-b border-slate-50">
+          <User size={15} className="text-slate-400" />
+          <h2 className="text-sm font-semibold text-slate-700">Thông tin tài khoản</h2>
+        </div>
+        <div className="p-6 flex items-center gap-4">
+          <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-white text-lg font-bold shrink-0" style={{ background: "#2F5E9E" }}>
             {initials}
           </div>
-          <div>
+          <div className="flex-1 min-w-0">
             <p className="font-semibold text-slate-800">Quản trị viên</p>
-            <div className="flex items-center gap-1.5 mt-1">
-              <Mail size={12} className="text-slate-400" />
-              <p className="text-sm text-slate-500">{user?.email}</p>
+            <p className="text-sm text-slate-500 truncate mt-0.5">{user?.email}</p>
+            <div className="flex items-center gap-3 mt-2">
+              <span className="inline-flex items-center gap-1 text-[11px] font-medium text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">
+                <Shield size={10} /> Admin
+              </span>
+              <span className="text-[11px] text-slate-400">Tham gia: {joined}</span>
             </div>
-            <div className="flex items-center gap-1.5 mt-0.5">
-              <Shield size={12} className="text-slate-400" />
-              <p className="text-xs text-slate-400">Tham gia: {joined}</p>
-            </div>
+          </div>
+        </div>
+        <div className="px-6 pb-4 grid grid-cols-2 gap-3">
+          <div className="bg-slate-50 rounded-xl px-4 py-3">
+            <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide mb-1">User ID</p>
+            <p className="text-xs text-slate-600 font-mono truncate">{user?.id}</p>
+          </div>
+          <div className="bg-slate-50 rounded-xl px-4 py-3">
+            <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide mb-1">Provider</p>
+            <p className="text-xs text-slate-600">{user?.app_metadata?.provider ?? "email"}</p>
           </div>
         </div>
       </div>
 
-      {/* Change Password */}
-      <div className="bg-white rounded-2xl border border-slate-100 p-6">
-        <div className="flex items-center gap-2 mb-5">
-          <Key size={15} className="text-slate-500" />
-          <h2 className="text-sm font-semibold text-slate-700">Đổi mật khẩu</h2>
+      {/* ── Thông tin website ── */}
+      <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
+        <div className="flex items-center gap-2 px-6 py-4 border-b border-slate-50">
+          <Globe size={15} className="text-slate-400" />
+          <h2 className="text-sm font-semibold text-slate-700">Thông tin website</h2>
         </div>
-        <ChangePasswordForm />
+        <div className="p-6">
+          <SiteSettingsForm />
+        </div>
       </div>
 
-      {/* Account info */}
-      <div className="bg-slate-50 rounded-2xl border border-slate-100 p-5">
-        <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">
-          Thông tin tài khoản
-        </p>
-        <div className="space-y-2 text-sm">
-          <div className="flex justify-between">
-            <span className="text-slate-500">User ID</span>
-            <span className="text-slate-600 font-mono text-xs bg-slate-100 px-2 py-0.5 rounded truncate max-w-48">
-              {user?.id}
-            </span>
+      {/* ── Email thông báo ── */}
+      <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-50">
+          <div className="flex items-center gap-2">
+            <Bell size={15} className="text-slate-400" />
+            <h2 className="text-sm font-semibold text-slate-700">Email thông báo</h2>
           </div>
-          <div className="flex justify-between">
-            <span className="text-slate-500">Provider</span>
-            <span className="text-slate-600 text-xs">
-              {user?.app_metadata?.provider ?? "email"}
-            </span>
-          </div>
+          <span className="text-[11px] text-slate-400">Nhận email khi có liên hệ mới</span>
+        </div>
+        <div className="p-6">
+          <EmailSettingsForm />
+        </div>
+      </div>
+
+      {/* ── Bảo mật ── */}
+      <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
+        <div className="flex items-center gap-2 px-6 py-4 border-b border-slate-50">
+          <Key size={15} className="text-slate-400" />
+          <h2 className="text-sm font-semibold text-slate-700">Bảo mật</h2>
+        </div>
+        <div className="p-6">
+          <ChangePasswordForm />
         </div>
       </div>
     </div>

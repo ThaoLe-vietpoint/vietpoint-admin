@@ -1,5 +1,5 @@
 import { createClient } from "@/utils/supabase/server";
-import { Phone, MessageCircle, Users } from "lucide-react";
+import { Phone, MessageCircle, Users, CheckCircle2, Circle } from "lucide-react";
 import LeadsTable from "./LeadsTable";
 
 export default async function LeadsPage() {
@@ -11,7 +11,8 @@ export default async function LeadsPage() {
 
   const total = leads?.length ?? 0;
   const withPhone = leads?.filter((l) => l.phone).length ?? 0;
-  const withMessage = leads?.filter((l) => l.message).length ?? 0;
+  const pending = leads?.filter((l) => !l.processed).length ?? 0;
+  const done = leads?.filter((l) => l.processed).length ?? 0;
 
   const cards = [
     {
@@ -22,16 +23,23 @@ export default async function LeadsPage() {
       bg: "bg-blue-50",
     },
     {
-      label: "Có số điện thoại",
-      value: withPhone,
-      icon: Phone,
+      label: "Chưa xử lý",
+      value: pending,
+      icon: Circle,
+      color: "text-amber-600",
+      bg: "bg-amber-50",
+    },
+    {
+      label: "Đã xử lý",
+      value: done,
+      icon: CheckCircle2,
       color: "text-emerald-600",
       bg: "bg-emerald-50",
     },
     {
-      label: "Có tin nhắn",
-      value: withMessage,
-      icon: MessageCircle,
+      label: "Có số điện thoại",
+      value: withPhone,
+      icon: Phone,
       color: "text-violet-600",
       bg: "bg-violet-50",
     },
@@ -47,7 +55,7 @@ export default async function LeadsPage() {
       </div>
 
       {/* Summary cards */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-4 gap-4">
         {cards.map((c) => {
           const Icon = c.icon;
           return (
