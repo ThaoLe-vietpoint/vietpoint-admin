@@ -18,7 +18,7 @@ export default async function EditTermLifeBenefitPage({
 
   return (
     <div>
-      <h1 className="text-xl font-bold text-slate-100 mb-6">
+      <h1 className="text-xl font-bold text-slate-800 mb-6">
         Chỉnh sửa quyền lợi
       </h1>
       <BenefitForm benefit={benefit} backHref="/insurance/termlife" />

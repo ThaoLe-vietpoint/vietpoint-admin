@@ -36,7 +36,7 @@ export default function MaxReasonActions({
       <button
         onClick={toggle}
         disabled={loading}
-        className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-700 transition-colors"
+        className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
         title={reason.active ? "Ẩn" : "Hiện"}
       >
         {reason.active ? <Eye size={15} /> : <EyeOff size={15} />}

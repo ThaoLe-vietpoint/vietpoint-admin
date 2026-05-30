@@ -18,7 +18,7 @@ export default async function EditIULFaqPage({
 
   return (
     <div>
-      <h1 className="text-xl font-bold text-slate-100 mb-6">
+      <h1 className="text-xl font-bold text-slate-800 mb-6">
         Chỉnh sửa câu hỏi
       </h1>
       <FaqForm faq={faq} />

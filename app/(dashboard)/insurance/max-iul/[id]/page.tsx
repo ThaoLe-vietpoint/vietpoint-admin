@@ -18,7 +18,7 @@ export default async function EditMaxIULReasonPage({
 
   return (
     <div>
-      <h1 className="text-xl font-bold text-slate-100 mb-6">Chỉnh sửa lý do</h1>
+      <h1 className="text-xl font-bold text-slate-800 mb-6">Chỉnh sửa lý do</h1>
       <MaxReasonForm reason={reason} />
     </div>
   );

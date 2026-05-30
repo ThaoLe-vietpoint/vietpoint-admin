@@ -1,4 +1,5 @@
 "use client";
+import { useState, useRef, useEffect } from "react";
 import { Save, Loader2, CheckCircle2 } from "lucide-react";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -319,6 +320,38 @@ export function buildStateVi(rows: Row[]) {
   return state;
 }
 
+// ─── Auto-resize Textarea ─────────────────────────────────────────────────────
+function AutoTextarea({
+  value,
+  onChange,
+  placeholder,
+  className,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  placeholder?: string;
+  className: string;
+}) {
+  const ref = useRef<HTMLTextAreaElement>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = el.scrollHeight + "px";
+  }, [value]);
+  return (
+    <textarea
+      ref={ref}
+      rows={1}
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      placeholder={placeholder}
+      className={`${className} resize-none overflow-hidden`}
+      style={{ minHeight: "80px" }}
+    />
+  );
+}
+
 // ─── Field Component ──────────────────────────────────────────────────────────
 export function Field({
   label,
@@ -343,12 +376,11 @@ export function Field({
         {label}
       </label>
       {textarea ? (
-        <textarea
-          rows={3}
+        <AutoTextarea
           value={value}
-          onChange={(e) => onChange(e.target.value)}
+          onChange={onChange}
           placeholder={placeholder}
-          className={`${cls} resize-none`}
+          className={cls}
         />
       ) : (
         <input
@@ -384,57 +416,59 @@ export function BiField({
   textarea?: boolean;
   hint?: string;
 }) {
+  const [lang, setLang] = useState<"en" | "vi">("en");
   const cls =
     "w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all bg-white";
+
+  const renderInput = (
+    val: string,
+    onChange: (v: string) => void,
+    ph?: string,
+  ) =>
+    textarea ? (
+      <AutoTextarea value={val} onChange={onChange} placeholder={ph} className={cls} />
+    ) : (
+      <input
+        type="text"
+        value={val}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={ph}
+        className={cls}
+      />
+    );
+
   return (
     <div>
-      <label className="block text-xs font-semibold text-slate-600 mb-1.5">
-        {label}
-      </label>
-      <div className="grid grid-cols-2 gap-2">
-        <div>
-          <span className="block text-[11px] text-slate-400 mb-1">
-            🇺🇸 English
-          </span>
-          {textarea ? (
-            <textarea
-              rows={3}
-              value={valueEn}
-              onChange={(e) => onChangeEn(e.target.value)}
-              placeholder={placeholder}
-              className={`${cls} resize-none`}
-            />
-          ) : (
-            <input
-              type="text"
-              value={valueEn}
-              onChange={(e) => onChangeEn(e.target.value)}
-              placeholder={placeholder}
-              className={cls}
-            />
-          )}
-        </div>
-        <div>
-          <span className="block text-[11px] text-slate-400 mb-1">
-            🇻🇳 Tiếng Việt
-          </span>
-          {textarea ? (
-            <textarea
-              rows={3}
-              value={valueVi}
-              onChange={(e) => onChangeVi(e.target.value)}
-              className={`${cls} resize-none`}
-            />
-          ) : (
-            <input
-              type="text"
-              value={valueVi}
-              onChange={(e) => onChangeVi(e.target.value)}
-              className={cls}
-            />
-          )}
+      <div className="flex items-center justify-between mb-1.5">
+        <label className="text-xs font-semibold text-slate-600">{label}</label>
+        <div className="flex bg-slate-100 rounded-lg p-0.5 gap-0.5">
+          <button
+            type="button"
+            onClick={() => setLang("en")}
+            className={`flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-semibold transition-all ${
+              lang === "en"
+                ? "bg-white text-slate-700 shadow-sm"
+                : "text-slate-400 hover:text-slate-600"
+            }`}
+          >
+            🇺🇸 EN
+          </button>
+          <button
+            type="button"
+            onClick={() => setLang("vi")}
+            className={`flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-semibold transition-all ${
+              lang === "vi"
+                ? "bg-white text-slate-700 shadow-sm"
+                : "text-slate-400 hover:text-slate-600"
+            }`}
+          >
+            🇻🇳 VI
+          </button>
         </div>
       </div>
+      {lang === "en"
+        ? renderInput(valueEn, onChangeEn, placeholder)
+        : renderInput(valueVi, onChangeVi)}
       {hint && <p className="text-[11px] text-slate-400 mt-1">{hint}</p>}
     </div>
   );

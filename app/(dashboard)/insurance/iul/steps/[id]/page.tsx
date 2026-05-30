@@ -18,7 +18,7 @@ export default async function EditIULStepPage({
 
   return (
     <div>
-      <h1 className="text-xl font-bold text-slate-100 mb-6">Chỉnh sửa bước</h1>
+      <h1 className="text-xl font-bold text-slate-800 mb-6">Chỉnh sửa bước</h1>
       <StepForm step={step} />
     </div>
   );
