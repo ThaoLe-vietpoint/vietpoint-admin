@@ -2,13 +2,31 @@ import { createClient } from "@/utils/supabase/server";
 import Link from "next/link";
 import { Plus, Pencil, ChevronRight, TrendingUp } from "lucide-react";
 import MaxReasonActions from "./MaxReasonActions";
+import InsuranceContentEditor, { FieldDef } from "../InsuranceContentEditor";
+
+const MAX_FIELDS: FieldDef[] = [
+  { section: "hero", field: "h", label: "Hero — Tiêu đề chính", defaultEn: "WHAT IS MAX FUNDED IUL SECRETS?", defaultVi: "MAX FUNDED IUL SECRETS LÀ GÌ?" },
+  { section: "hero", field: "cta", label: "Hero — Nút bấm", defaultEn: "REGISTER NOW", defaultVi: "ĐĂNG KÝ NGAY" },
+  { section: "hero", field: "desc", label: "Hero — Mô tả (phần đầu)", defaultEn: "Max-Funded IUL Secrets is a powerful, safe investment program — integrated with life insurance. With the aim of helping participants receive an average of", defaultVi: "Max-Funded IUL Secrets là chương trình đầu tư mạnh mẽ, an toàn — tích hợp với bảo hiểm nhân thọ. Với mục tiêu giúp người tham gia nhận trung bình", multiline: true, rows: 2 },
+  { section: "hero", field: "amount", label: "Hero — Số tiền nổi bật", defaultEn: "$50,000 per year", defaultVi: "$50,000 mỗi năm" },
+  { section: "hero", field: "desc2", label: "Hero — Mô tả (phần sau)", defaultEn: ", received continuously for 20 consecutive years, tax-free.", defaultVi: ", nhận liên tục trong 20 năm liên tiếp, hoàn toàn miễn thuế." },
+  { section: "sections", field: "reasons_h1", label: "Tiêu đề mục Lý do", defaultEn: "9 REASONS WHY YOU SHOULD JOIN", defaultVi: "9 LÝ DO TẠI SAO BẠN NÊN THAM GIA" },
+  { section: "cta", field: "h", label: "CTA cuối trang — Tiêu đề", defaultEn: "Ready to Secure Your Retirement?", defaultVi: "Sẵn Sàng Bảo Vệ Hưu Trí Của Bạn?" },
+  { section: "cta", field: "sub", label: "CTA cuối trang — Phụ đề", defaultEn: "Get a free consultation with our expert agents today.", defaultVi: "Nhận tư vấn miễn phí từ chuyên gia của chúng tôi ngay hôm nay." },
+];
 
 export default async function MaxIULPage() {
   const supabase = await createClient();
-  const { data: reasons } = await supabase
-    .from("max_iul_reasons")
-    .select("*")
-    .order("sort_order", { ascending: true });
+  const [{ data: reasons }, { data: contentRows }] = await Promise.all([
+    supabase
+      .from("max_iul_reasons")
+      .select("*")
+      .order("sort_order", { ascending: true }),
+    supabase
+      .from("page_content")
+      .select("page, section, field, value_en, value_vi")
+      .eq("page", "insurance_max_iul"),
+  ]);
 
   return (
     <div className="space-y-6 max-w-4xl">
@@ -33,6 +51,13 @@ export default async function MaxIULPage() {
           <Plus size={15} /> Thêm mới
         </Link>
       </div>
+
+      <InsuranceContentEditor
+        pageKey="insurance_max_iul"
+        title="Nội dung trang Max-Funded IUL (Hero, Tiêu đề, CTA)"
+        fields={MAX_FIELDS}
+        initialRows={contentRows ?? []}
+      />
 
       <div className="bg-white border border-slate-100 rounded-2xl overflow-hidden">
         <table className="w-full text-sm">

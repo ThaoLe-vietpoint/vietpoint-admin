@@ -15,19 +15,27 @@ export default function StepActions({
 
   const toggle = async () => {
     setLoading(true);
-    await supabase
+    const { error } = await supabase
       .from("iul_steps")
       .update({ active: !step.active })
       .eq("id", step.id);
     setLoading(false);
+    if (error) {
+      alert("Lỗi cập nhật: " + error.message);
+      return;
+    }
     router.refresh();
   };
 
   const remove = async () => {
     if (!confirm("Xóa bước này?")) return;
     setLoading(true);
-    await supabase.from("iul_steps").delete().eq("id", step.id);
+    const { error } = await supabase.from("iul_steps").delete().eq("id", step.id);
     setLoading(false);
+    if (error) {
+      alert("Lỗi khi xóa: " + error.message);
+      return;
+    }
     router.refresh();
   };
 

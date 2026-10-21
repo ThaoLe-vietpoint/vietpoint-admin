@@ -15,19 +15,27 @@ export default function FaqActions({
 
   const toggle = async () => {
     setLoading(true);
-    await supabase
+    const { error } = await supabase
       .from("iul_faqs")
       .update({ active: !faq.active })
       .eq("id", faq.id);
     setLoading(false);
+    if (error) {
+      alert("Lỗi cập nhật: " + error.message);
+      return;
+    }
     router.refresh();
   };
 
   const remove = async () => {
     if (!confirm("Xóa câu hỏi này?")) return;
     setLoading(true);
-    await supabase.from("iul_faqs").delete().eq("id", faq.id);
+    const { error } = await supabase.from("iul_faqs").delete().eq("id", faq.id);
     setLoading(false);
+    if (error) {
+      alert("Lỗi khi xóa: " + error.message);
+      return;
+    }
     router.refresh();
   };
 

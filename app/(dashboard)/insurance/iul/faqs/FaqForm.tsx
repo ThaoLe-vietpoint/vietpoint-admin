@@ -71,7 +71,12 @@ export default function FaqForm({ faq }: { faq?: FaqRow }) {
   const handleDelete = async () => {
     if (!confirmDelete) { setConfirmDelete(true); return; }
     setDeleting(true);
-    await supabase.from("iul_faqs").delete().eq("id", faq!.id!);
+    const { error: err } = await supabase.from("iul_faqs").delete().eq("id", faq!.id!);
+    if (err) {
+      setDeleting(false);
+      setError("Lỗi khi xóa: " + err.message);
+      return;
+    }
     router.push("/insurance/iul/faqs");
     router.refresh();
   };

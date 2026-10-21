@@ -74,7 +74,12 @@ export default function MaxReasonForm({ reason }: { reason?: ReasonRow }) {
   const handleDelete = async () => {
     if (!confirmDelete) { setConfirmDelete(true); return; }
     setDeleting(true);
-    await supabase.from("max_iul_reasons").delete().eq("id", reason!.id!);
+    const { error: err } = await supabase.from("max_iul_reasons").delete().eq("id", reason!.id!);
+    if (err) {
+      setDeleting(false);
+      setError("Lỗi khi xóa: " + err.message);
+      return;
+    }
     router.push("/insurance/max-iul");
     router.refresh();
   };

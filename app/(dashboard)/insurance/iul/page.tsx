@@ -1,16 +1,38 @@
 import { createClient } from "@/utils/supabase/server";
 import Link from "next/link";
 import { Zap, ChevronRight, Plus } from "lucide-react";
+import InsuranceContentEditor, { FieldDef } from "../InsuranceContentEditor";
+
+const IUL_FIELDS: FieldDef[] = [
+  { section: "hero", field: "sub", label: "Hero — Nhãn phụ", defaultEn: "IUL SECRETS", defaultVi: "IUL SECRETS" },
+  { section: "hero", field: "h1", label: "Hero — Tiêu đề chính (Dòng 1)", defaultEn: "THE KEY TO YOUR", defaultVi: "CHÌA KHÓA CHO" },
+  { section: "hero", field: "h2", label: "Hero — Tiêu đề phụ (Dòng 2)", defaultEn: "FINANCIAL FUTURE", defaultVi: "TƯƠNG LAI TÀI CHÍNH CỦA BẠN" },
+  { section: "hero", field: "cta", label: "Hero — Nút bấm", defaultEn: "DISCOVER MORE", defaultVi: "KHÁM PHÁ NGAY" },
+  { section: "sections", field: "reasons_h1", label: "Tiêu đề mục Lý do", defaultEn: "6 REASONS TO JOIN", defaultVi: "6 LÝ DO NÊN THAM GIA" },
+  { section: "sections", field: "diseases_h1", label: "Tiêu đề mục Bệnh bảo hiểm", defaultEn: "Over 16 Types of Diseases and Injuries Covered", defaultVi: "Hơn 16 Loại Bệnh và Chấn Thương Được Bảo Hiểm" },
+  { section: "sections", field: "diseases_sub", label: "Phụ đề mục Bệnh bảo hiểm", defaultEn: "in the program's policy", defaultVi: "trong chính sách của chương trình" },
+  { section: "sections", field: "steps_h1", label: "Tiêu đề mục Các bước", defaultEn: "3 SIMPLE STEPS TO JOIN", defaultVi: "3 BƯỚC ĐƠN GIẢN ĐỂ THAM GIA" },
+  { section: "sections", field: "faq_h1", label: "Tiêu đề mục FAQ", defaultEn: "FAQ – Some Questions You Are Wondering", defaultVi: "FAQ – Những Câu Hỏi Bạn Đang Thắc Mắc" },
+  { section: "cta", field: "h1", label: "CTA cuối trang — Tiêu đề", defaultEn: "Get a Free Consultation Today", defaultVi: "Nhận Tư Vấn Miễn Phí Ngay Hôm Nay" },
+];
 
 export default async function IULPage() {
   const supabase = await createClient();
 
-  const [{ count: reasonsCount }, { count: stepsCount }, { count: faqsCount }] =
-    await Promise.all([
-      supabase.from("iul_reasons").select("*", { count: "exact", head: true }),
-      supabase.from("iul_steps").select("*", { count: "exact", head: true }),
-      supabase.from("iul_faqs").select("*", { count: "exact", head: true }),
-    ]);
+  const [
+    { count: reasonsCount },
+    { count: stepsCount },
+    { count: faqsCount },
+    { data: contentRows },
+  ] = await Promise.all([
+    supabase.from("iul_reasons").select("*", { count: "exact", head: true }),
+    supabase.from("iul_steps").select("*", { count: "exact", head: true }),
+    supabase.from("iul_faqs").select("*", { count: "exact", head: true }),
+    supabase
+      .from("page_content")
+      .select("page, section, field, value_en, value_vi")
+      .eq("page", "insurance_iul"),
+  ]);
 
   const sections = [
     {
@@ -49,6 +71,13 @@ export default async function IULPage() {
         <Zap size={22} className="text-blue-600" />
         <h1 className="text-xl font-bold text-slate-800">IUL Secrets</h1>
       </div>
+
+      <InsuranceContentEditor
+        pageKey="insurance_iul"
+        title="Nội dung trang IUL Secrets (Hero, Tiêu đề, CTA)"
+        fields={IUL_FIELDS}
+        initialRows={contentRows ?? []}
+      />
 
       <div className="space-y-3">
         {sections.map((s) => (

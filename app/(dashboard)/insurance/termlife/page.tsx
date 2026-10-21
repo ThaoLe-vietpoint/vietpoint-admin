@@ -2,13 +2,30 @@ import { createClient } from "@/utils/supabase/server";
 import Link from "next/link";
 import { Plus, Pencil, ChevronRight, Clock } from "lucide-react";
 import BenefitActions from "../kid-iul/BenefitActions";
+import InsuranceContentEditor, { FieldDef } from "../InsuranceContentEditor";
+
+const TERMLIFE_FIELDS: FieldDef[] = [
+  { section: "hero", field: "title", label: "Hero — Tiêu đề chính", defaultEn: "TERM LIFE INSURANCE", defaultVi: "BẢO HIỂM KỲ HẠN (TERM LIFE)" },
+  { section: "hero", field: "cta", label: "Hero — Nút bấm", defaultEn: "Get Free Quote", defaultVi: "Nhận Báo Giá Miễn Phí" },
+  { section: "hero", field: "desc", label: "Hero — Mô tả", defaultEn: "Affordable protection for you and your family — covering over 16 critical illnesses with terms up to 30 years.", defaultVi: "Bảo vệ giá cả phải chăng cho bạn và gia đình — bao gồm hơn 16 bệnh nguy kịch với thời hạn lên đến 30 năm.", multiline: true, rows: 2 },
+  { section: "sections", field: "benefits_h", label: "Tiêu đề mục Quyền lợi", defaultEn: "Why Choose Term Life?", defaultVi: "Tại Sao Chọn Bảo Hiểm Kỳ Hạn?" },
+  { section: "sections", field: "compare_h", label: "Tiêu đề bảng So sánh", defaultEn: "Term Life vs. IUL — Which is Right for You?", defaultVi: "Term Life vs. IUL — Loại Nào Phù Hợp Với Bạn?" },
+  { section: "cta", field: "h", label: "CTA cuối trang — Tiêu đề", defaultEn: "Get Your Free Term Life Quote", defaultVi: "Nhận Báo Giá Bảo Hiểm Kỳ Hạn Miễn Phí" },
+  { section: "cta", field: "sub", label: "CTA cuối trang — Phụ đề", defaultEn: "Our agents are ready to find the most suitable Term Life plan for your family. Contact us today — consultation is completely free.", defaultVi: "Chuyên viên của chúng tôi sẵn sàng tìm gói Term Life phù hợp nhất cho gia đình bạn. Liên hệ ngay — tư vấn hoàn toàn miễn phí.", multiline: true, rows: 2 },
+];
 
 export default async function TermLifePage() {
   const supabase = await createClient();
-  const { data: benefits } = await supabase
-    .from("termlife_benefits")
-    .select("*")
-    .order("sort_order", { ascending: true });
+  const [{ data: benefits }, { data: contentRows }] = await Promise.all([
+    supabase
+      .from("termlife_benefits")
+      .select("*")
+      .order("sort_order", { ascending: true }),
+    supabase
+      .from("page_content")
+      .select("page, section, field, value_en, value_vi")
+      .eq("page", "insurance_termlife"),
+  ]);
 
   return (
     <div className="space-y-6 max-w-4xl">
@@ -33,6 +50,13 @@ export default async function TermLifePage() {
           <Plus size={15} /> Thêm mới
         </Link>
       </div>
+
+      <InsuranceContentEditor
+        pageKey="insurance_termlife"
+        title="Nội dung trang Term Life (Hero, Tiêu đề, CTA)"
+        fields={TERMLIFE_FIELDS}
+        initialRows={contentRows ?? []}
+      />
 
       <div className="bg-white border border-slate-100 rounded-2xl overflow-hidden">
         <table className="w-full text-sm">

@@ -16,19 +16,27 @@ export default function ReasonActions({ reason }: { reason: Reason }) {
 
   const toggle = async () => {
     setLoading(true);
-    await supabase
+    const { error } = await supabase
       .from("iul_reasons")
       .update({ active: !reason.active })
       .eq("id", reason.id);
     setLoading(false);
+    if (error) {
+      alert("Lỗi cập nhật: " + error.message);
+      return;
+    }
     router.refresh();
   };
 
   const remove = async () => {
     if (!confirm("Xóa lý do này?")) return;
     setLoading(true);
-    await supabase.from("iul_reasons").delete().eq("id", reason.id);
+    const { error } = await supabase.from("iul_reasons").delete().eq("id", reason.id);
     setLoading(false);
+    if (error) {
+      alert("Lỗi khi xóa: " + error.message);
+      return;
+    }
     router.refresh();
   };
 

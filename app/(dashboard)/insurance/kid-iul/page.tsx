@@ -2,13 +2,31 @@ import { createClient } from "@/utils/supabase/server";
 import Link from "next/link";
 import { Plus, Pencil, ChevronRight, Baby } from "lucide-react";
 import BenefitActions from "./BenefitActions";
+import InsuranceContentEditor, { FieldDef } from "../InsuranceContentEditor";
+
+const KID_FIELDS: FieldDef[] = [
+  { section: "hero", field: "title", label: "Hero — Tiêu đề chính", defaultEn: "IUL For Kids (EBTP)", defaultVi: "IUL Cho Trẻ Em (EBTP)" },
+  { section: "hero", field: "cta", label: "Hero — Nút bấm", defaultEn: "Get Free Quote", defaultVi: "Nhận Báo Giá Miễn Phí" },
+  { section: "hero", field: "desc", label: "Hero — Mô tả", defaultEn: "Protect your children and build a financial fund for them to enter university, giving them wings to fly far and higher at the age of 18.", defaultVi: "Bảo vệ con bạn và xây dựng quỹ tài chính cho con vào đại học, cho con đôi cánh để bay xa hơn ở tuổi 18.", multiline: true, rows: 2 },
+  { section: "how", field: "h", label: "Mục Cách hoạt động — Tiêu đề", defaultEn: "How It Works", defaultVi: "Cách Thức Hoạt Động" },
+  { section: "how", field: "desc", label: "Mục Cách hoạt động — Mô tả", defaultEn: "IUL For Kids (EBTP — Educational Benefits Trust Program) is a specially designed Indexed Universal Life insurance policy for children. Parents start the policy early, premiums grow with the market, and by age 18 your child has a tax-free fund ready for college or life expenses.", defaultVi: "IUL For Kids (EBTP — Chương trình Tín thác Phúc lợi Giáo dục) là hợp đồng bảo hiểm nhân thọ toàn cầu có chỉ số được thiết kế đặc biệt cho trẻ em. Cha mẹ bắt đầu hợp đồng sớm, phí bảo hiểm tăng theo thị trường và đến năm 18 tuổi, con bạn có quỹ miễn thuế sẵn sàng cho đại học hoặc chi phí cuộc sống.", multiline: true, rows: 3 },
+  { section: "sections", field: "benefits_h", label: "Tiêu đề mục Quyền lợi", defaultEn: "Key Benefits", defaultVi: "Các Lợi Ích Chính" },
+  { section: "cta", field: "h", label: "CTA cuối trang — Tiêu đề", defaultEn: "Give Your Child the Gift of Financial Security", defaultVi: "Tặng Con Bạn Nền Tảng Tài Chính Vững Chắc" },
+  { section: "cta", field: "sub", label: "CTA cuối trang — Phụ đề", defaultEn: "Start your child's IUL policy today. Consultation is free.", defaultVi: "Bắt đầu hợp đồng IUL cho con ngay hôm nay. Tư vấn hoàn toàn miễn phí." },
+];
 
 export default async function KidIULPage() {
   const supabase = await createClient();
-  const { data: benefits } = await supabase
-    .from("kid_iul_benefits")
-    .select("*")
-    .order("sort_order", { ascending: true });
+  const [{ data: benefits }, { data: contentRows }] = await Promise.all([
+    supabase
+      .from("kid_iul_benefits")
+      .select("*")
+      .order("sort_order", { ascending: true }),
+    supabase
+      .from("page_content")
+      .select("page, section, field, value_en, value_vi")
+      .eq("page", "insurance_kid_iul"),
+  ]);
 
   return (
     <div className="space-y-6 max-w-4xl">
@@ -33,6 +51,13 @@ export default async function KidIULPage() {
           <Plus size={15} /> Thêm mới
         </Link>
       </div>
+
+      <InsuranceContentEditor
+        pageKey="insurance_kid_iul"
+        title="Nội dung trang IUL Cho Trẻ (Hero, Mô tả, CTA)"
+        fields={KID_FIELDS}
+        initialRows={contentRows ?? []}
+      />
 
       <div className="bg-white border border-slate-100 rounded-2xl overflow-hidden">
         <table className="w-full text-sm">

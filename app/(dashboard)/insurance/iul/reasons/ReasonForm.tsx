@@ -75,7 +75,12 @@ export default function ReasonForm({ reason }: { reason?: ReasonRow }) {
   const handleDelete = async () => {
     if (!confirmDelete) { setConfirmDelete(true); return; }
     setDeleting(true);
-    await supabase.from("iul_reasons").delete().eq("id", reason!.id!);
+    const { error: err } = await supabase.from("iul_reasons").delete().eq("id", reason!.id!);
+    if (err) {
+      setDeleting(false);
+      setError("Lỗi khi xóa: " + err.message);
+      return;
+    }
     router.push("/insurance/iul/reasons");
     router.refresh();
   };

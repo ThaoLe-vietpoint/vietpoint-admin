@@ -88,7 +88,12 @@ export default function BenefitForm({
   const handleDelete = async () => {
     if (!confirmDelete) { setConfirmDelete(true); return; }
     setDeleting(true);
-    await supabase.from(table).delete().eq("id", benefit!.id!);
+    const { error: err } = await supabase.from(table).delete().eq("id", benefit!.id!);
+    if (err) {
+      setDeleting(false);
+      setError("Lỗi khi xóa: " + err.message);
+      return;
+    }
     router.push(backHref);
     router.refresh();
   };

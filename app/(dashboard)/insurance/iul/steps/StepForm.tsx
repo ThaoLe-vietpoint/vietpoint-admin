@@ -74,7 +74,12 @@ export default function StepForm({ step }: { step?: StepRow }) {
   const handleDelete = async () => {
     if (!confirmDelete) { setConfirmDelete(true); return; }
     setDeleting(true);
-    await supabase.from("iul_steps").delete().eq("id", step!.id!);
+    const { error: err } = await supabase.from("iul_steps").delete().eq("id", step!.id!);
+    if (err) {
+      setDeleting(false);
+      setError("Lỗi khi xóa: " + err.message);
+      return;
+    }
     router.push("/insurance/iul/steps");
     router.refresh();
   };

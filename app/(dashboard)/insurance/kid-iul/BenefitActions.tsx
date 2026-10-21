@@ -17,19 +17,27 @@ export default function BenefitActions({
 
   const toggle = async () => {
     setLoading(true);
-    await supabase
+    const { error } = await supabase
       .from(table)
       .update({ active: !benefit.active })
       .eq("id", benefit.id);
     setLoading(false);
+    if (error) {
+      alert("Lỗi cập nhật: " + error.message);
+      return;
+    }
     router.refresh();
   };
 
   const remove = async () => {
     if (!confirm("Xóa quyền lợi này?")) return;
     setLoading(true);
-    await supabase.from(table).delete().eq("id", benefit.id);
+    const { error } = await supabase.from(table).delete().eq("id", benefit.id);
     setLoading(false);
+    if (error) {
+      alert("Lỗi khi xóa: " + error.message);
+      return;
+    }
     router.refresh();
   };
 
