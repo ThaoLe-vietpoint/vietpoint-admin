@@ -299,6 +299,13 @@ export const DEFAULT_VERIFY_TIPS: string[] = [
   "If in doubt, call our office directly: (678) 825-3737",
 ];
 
+export const DEFAULT_VERIFY_TIPS_VI: string[] = [
+  "Luôn xác minh đại lý của bạn qua công cụ chính thức này trước khi cung cấp thông tin cá nhân",
+  "Đại lý VietPoint chính thức sẽ không bao giờ yêu cầu số An Sinh Xã Hội qua tin nhắn hoặc email không mã hóa",
+  'Tất cả tư vấn viên chính thức đều có mã giấy phép do VietPoint cấp bắt đầu bằng "TS-"',
+  "Nếu nghi ngờ, hãy gọi trực tiếp văn phòng chúng tôi: (678) 825-3737",
+];
+
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 export function buildState(rows: Row[]) {
   const state: Record<string, Record<string, Record<string, string>>> = {};

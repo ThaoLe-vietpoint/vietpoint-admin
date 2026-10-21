@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { createClient } from "@/utils/supabase/client";
-import { Row, DEFAULT_VERIFY_TIPS, Field, BiField, SaveBar } from "../_shared";
+import { Row, DEFAULT_VERIFY_TIPS, DEFAULT_VERIFY_TIPS_VI, Field, BiField, SaveBar } from "../_shared";
 import { Plus, Trash2 } from "lucide-react";
 
 const TABS = [
@@ -57,15 +57,45 @@ export default function VerifyEditor({ initialRows }: { initialRows: Row[] }) {
     return DEFAULT_VERIFY_TIPS;
   });
 
+  const [tipsVi, setTipsVi] = useState<string[]>(() => {
+    const parse = (raw: string): string[] | null => {
+      try {
+        const v = JSON.parse(raw);
+        return Array.isArray(v) ? v : null;
+      } catch {
+        return null;
+      }
+    };
+    const viRow = gVi("tips", "data", "");
+    const vi = viRow ? parse(viRow) : null;
+    const sameAsEn = vi && JSON.stringify(vi) === JSON.stringify(tips);
+    // Legacy rows stored the same English list in both languages
+    if (vi && !sameAsEn) return vi;
+    if (JSON.stringify(tips) === JSON.stringify(DEFAULT_VERIFY_TIPS))
+      return DEFAULT_VERIFY_TIPS_VI;
+    return tips.map(() => "");
+  });
+
   const updateTip = (i: number, value: string) =>
     setTips((prev) => {
       const next = [...prev];
       next[i] = value;
       return next;
     });
-  const addTip = () => setTips((prev) => [...prev, ""]);
-  const removeTip = (i: number) =>
+  const updateTipVi = (i: number, value: string) =>
+    setTipsVi((prev) => {
+      const next = [...prev];
+      next[i] = value;
+      return next;
+    });
+  const addTip = () => {
+    setTips((prev) => [...prev, ""]);
+    setTipsVi((prev) => [...prev, ""]);
+  };
+  const removeTip = (i: number) => {
     setTips((prev) => prev.filter((_, idx) => idx !== i));
+    setTipsVi((prev) => prev.filter((_, idx) => idx !== i));
+  };
 
   // ── save state
   const [tab, setTab] = useState<TabId>("hero");
@@ -113,7 +143,7 @@ export default function VerifyEditor({ initialRows }: { initialRows: Row[] }) {
         section: "tips",
         field: "data",
         value_en: JSON.stringify(tips),
-        value_vi: JSON.stringify(tips),
+        value_vi: JSON.stringify(tips.map((t, i) => tipsVi[i] || t)),
       },
     ];
 
@@ -197,13 +227,28 @@ export default function VerifyEditor({ initialRows }: { initialRows: Row[] }) {
           <h3 className="font-semibold text-slate-800 mb-2">Mẹo để an toàn</h3>
           {tips.map((tip, i) => (
             <div key={i} className="flex items-start gap-2">
-              <textarea
-                rows={2}
-                value={tip}
-                onChange={(e) => updateTip(i, e.target.value)}
-                className="flex-1 px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all bg-white resize-none"
-                placeholder="Safety tip..."
-              />
+              <div className="flex-1 space-y-2">
+                <div className="flex items-start gap-2">
+                  <span className="mt-2.5 text-[11px] font-bold text-slate-400 w-6">EN</span>
+                  <textarea
+                    rows={2}
+                    value={tip}
+                    onChange={(e) => updateTip(i, e.target.value)}
+                    className="flex-1 px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all bg-white resize-none"
+                    placeholder="Safety tip (English)..."
+                  />
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="mt-2.5 text-[11px] font-bold text-slate-400 w-6">VI</span>
+                  <textarea
+                    rows={2}
+                    value={tipsVi[i] ?? ""}
+                    onChange={(e) => updateTipVi(i, e.target.value)}
+                    className="flex-1 px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all bg-white resize-none"
+                    placeholder="Mẹo an toàn (Tiếng Việt)..."
+                  />
+                </div>
+              </div>
               <button
                 onClick={() => removeTip(i)}
                 className="mt-2 text-red-400 hover:text-red-600 transition-colors"
