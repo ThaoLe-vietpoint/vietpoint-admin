@@ -51,9 +51,23 @@ export default function RecruitmentEditor({
   // ── positions
   const [positions, setPositions] = useState<Position[]>(() => {
     const raw = g("positions", "data", "");
+    const rawVi = gVi("positions", "data", "");
     if (raw) {
       try {
-        return JSON.parse(raw);
+        const enList: Position[] = JSON.parse(raw);
+        let viList: Position[] = [];
+        if (rawVi) {
+          try {
+            viList = JSON.parse(rawVi);
+          } catch {}
+        }
+        return enList.map((item, idx) => ({
+          ...item,
+          title_vi: item.title_vi || viList[idx]?.title || "",
+          type_vi: item.type_vi || viList[idx]?.type || "",
+          location_vi: item.location_vi || viList[idx]?.location || "",
+          desc_vi: item.desc_vi || viList[idx]?.desc || "",
+        }));
       } catch {
         /* ignore */
       }
@@ -172,7 +186,15 @@ export default function RecruitmentEditor({
         section: "positions",
         field: "data",
         value_en: JSON.stringify(positions),
-        value_vi: JSON.stringify(positions),
+        value_vi: JSON.stringify(
+          positions.map((p) => ({
+            ...p,
+            title: p.title_vi || p.title,
+            type: p.type_vi || p.type,
+            location: p.location_vi || p.location,
+            desc: p.desc_vi || p.desc,
+          })),
+        ),
       },
       {
         page: "recruitment",

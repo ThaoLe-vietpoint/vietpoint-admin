@@ -89,9 +89,21 @@ export default function AboutEditor({ initialRows }: { initialRows: Row[] }) {
 
   const [whyUsItems, setWhyUsItems] = useState<WhyUsItem[]>(() => {
     const raw = initial.about?.why_us?.data;
+    const rawVi = initialVi.about?.why_us?.data;
     if (raw) {
       try {
-        return JSON.parse(raw);
+        const enList: WhyUsItem[] = JSON.parse(raw);
+        let viList: WhyUsItem[] = [];
+        if (rawVi) {
+          try {
+            viList = JSON.parse(rawVi);
+          } catch {}
+        }
+        return enList.map((item, idx) => ({
+          ...item,
+          title_vi: item.title_vi || viList[idx]?.title || "",
+          desc_vi: item.desc_vi || viList[idx]?.desc || "",
+        }));
       } catch {}
     }
     return DEFAULT_WHY_US;
@@ -199,7 +211,13 @@ export default function AboutEditor({ initialRows }: { initialRows: Row[] }) {
           section: "why_us",
           field: "data",
           value_en: JSON.stringify(whyUsItems),
-          value_vi: "",
+          value_vi: JSON.stringify(
+            whyUsItems.map((x) => ({
+              ...x,
+              title: x.title_vi || x.title,
+              desc: x.desc_vi || x.desc,
+            })),
+          ),
         },
       ];
     } else if (tab === "cta") {
