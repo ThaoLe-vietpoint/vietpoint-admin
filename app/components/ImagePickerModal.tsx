@@ -6,14 +6,22 @@ import { ImageIcon, Loader2, X, Check } from "lucide-react";
 
 type Props = {
   onSelect: (url: string) => void;
+  onSelectMultiple?: (urls: string[]) => void;
+  multiple?: boolean;
   onClose: () => void;
 };
 
-export default function ImagePickerModal({ onSelect, onClose }: Props) {
+export default function ImagePickerModal({
+  onSelect,
+  onSelectMultiple,
+  multiple = false,
+  onClose,
+}: Props) {
   const supabase = createClient();
   const [images, setImages] = useState<{ name: string; url: string }[]>([]);
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<string | null>(null);
+  const [selectedList, setSelectedList] = useState<string[]>([]);
 
   const loadImages = useCallback(async () => {
     const { data } = await supabase.storage
@@ -60,13 +68,36 @@ export default function ImagePickerModal({ onSelect, onClose }: Props) {
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 shrink-0">
           <div>
-            <h3 className="text-sm font-bold text-slate-800">Chọn từ thư viện</h3>
+            <h3 className="text-sm font-bold text-slate-800">
+              {multiple ? "Chọn một hoặc nhiều ảnh từ thư viện" : "Chọn từ thư viện"}
+            </h3>
             <p className="text-xs text-slate-400 mt-0.5">
-              {loading ? "Đang tải..." : `${images.length} ảnh`}
+              {loading
+                ? "Đang tải..."
+                : multiple && selectedList.length > 0
+                  ? `Đã chọn ${selectedList.length} / ${images.length} ảnh`
+                  : `${images.length} ảnh`}
             </p>
           </div>
           <div className="flex items-center gap-2">
-            {selected && (
+            {multiple && selectedList.length > 0 && (
+              <button
+                type="button"
+                onClick={() => {
+                  if (onSelectMultiple) {
+                    onSelectMultiple(selectedList);
+                  } else {
+                    selectedList.forEach((u) => onSelect(u));
+                  }
+                  onClose();
+                }}
+                className="flex items-center gap-1.5 px-4 py-2 text-sm font-semibold bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors"
+              >
+                <Check size={14} />
+                Chọn {selectedList.length} ảnh
+              </button>
+            )}
+            {!multiple && selected && (
               <button
                 type="button"
                 onClick={() => {
@@ -105,40 +136,52 @@ export default function ImagePickerModal({ onSelect, onClose }: Props) {
             </div>
           ) : (
             <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
-              {images.map((img) => (
-                <button
-                  key={img.name}
-                  type="button"
-                  onClick={() => {
-                    if (selected === img.url) {
-                      onSelect(img.url);
-                      onClose();
-                    } else {
-                      setSelected(img.url);
-                    }
-                  }}
-                  className={`relative aspect-square rounded-xl overflow-hidden border-2 transition-all ${
-                    selected === img.url
-                      ? "border-blue-500 shadow-md scale-[1.03]"
-                      : "border-transparent hover:border-slate-300"
-                  }`}
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={img.url}
-                    alt={img.name}
-                    className="w-full h-full object-cover"
-                    loading="lazy"
-                  />
-                  {selected === img.url && (
-                    <div className="absolute inset-0 bg-blue-600/20 flex items-center justify-center">
-                      <div className="w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center">
-                        <Check size={12} className="text-white" />
+              {images.map((img) => {
+                const multiIndex = selectedList.indexOf(img.url);
+                const isSelected = multiple
+                  ? multiIndex !== -1
+                  : selected === img.url;
+                return (
+                  <button
+                    key={img.name}
+                    type="button"
+                    onClick={() => {
+                      if (multiple) {
+                        setSelectedList((prev) =>
+                          prev.includes(img.url)
+                            ? prev.filter((u) => u !== img.url)
+                            : [...prev, img.url],
+                        );
+                      } else if (selected === img.url) {
+                        onSelect(img.url);
+                        onClose();
+                      } else {
+                        setSelected(img.url);
+                      }
+                    }}
+                    className={`relative aspect-square rounded-xl overflow-hidden border-2 transition-all ${
+                      isSelected
+                        ? "border-blue-500 shadow-md scale-[1.03]"
+                        : "border-transparent hover:border-slate-300"
+                    }`}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={img.url}
+                      alt={img.name}
+                      className="w-full h-full object-cover"
+                      loading="lazy"
+                    />
+                    {isSelected && (
+                      <div className="absolute inset-0 bg-blue-600/20 flex items-center justify-center">
+                        <div className="w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-bold shadow">
+                          {multiple ? multiIndex + 1 : <Check size={12} />}
+                        </div>
                       </div>
-                    </div>
-                  )}
-                </button>
-              ))}
+                    )}
+                  </button>
+                );
+              })}
             </div>
           )}
         </div>
@@ -147,7 +190,9 @@ export default function ImagePickerModal({ onSelect, onClose }: Props) {
         {!loading && images.length > 0 && (
           <div className="px-5 py-3 border-t border-slate-100 shrink-0">
             <p className="text-xs text-slate-400 text-center">
-              Click một lần để chọn · Click lần hai hoặc nhấn &ldquo;Chọn ảnh này&rdquo; để xác nhận
+              {multiple
+                ? "Click vào từng ảnh để chọn hoặc bỏ chọn nhiều ảnh theo thứ tự · Nhấn \"Chọn X ảnh\" để xác nhận"
+                : "Click một lần để chọn · Click lần hai hoặc nhấn \"Chọn ảnh này\" để xác nhận"}
             </p>
           </div>
         )}

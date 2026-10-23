@@ -2,6 +2,11 @@
 import { useState, useRef, useEffect } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { uploadImage, MAX_IMAGE_MB } from "@/utils/imageUpload";
+import {
+  parseBlogImages,
+  serializeBlogImages,
+  BlogImageConfig,
+} from "@/utils/blogImages";
 import ImagePickerModal from "./ImagePickerModal";
 import { useRouter } from "next/navigation";
 import {
@@ -18,6 +23,10 @@ import {
   Link2,
   ImageIcon,
   Upload,
+  Plus,
+  Star,
+  Copy,
+  FilePlus2,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -383,10 +392,16 @@ const TEXT_COLORS = [
 ];
 
 const CATEGORIES = [
+  "Featured post",
+  "Insurance Knowledge",
+  "Customer stories",
+  "Health - Life",
+  "Investment, Saving & Retire",
+  "Event",
   "IUL",
-  "Term Life",
-  "Max-Funded IUL",
-  "Kids IUL",
+  "Medicare",
+  "ACA Marketplace",
+  "Auto Insurance",
   "Financial Planning",
   "General",
 ];
@@ -421,6 +436,12 @@ export default function BlogPostForm({ post }: { post?: Post }) {
 
   const slugEdited = useRef(!!post?.slug);
 
+  const [imgConfig, setImgConfig] = useState<BlogImageConfig>(() =>
+    parseBlogImages(post?.image),
+  );
+  const [imgLangTab, setImgLangTab] = useState<"vi" | "en">("vi");
+  const [newImgUrl, setNewImgUrl] = useState("");
+
   const [form, setForm] = useState({
     slug: post?.slug ?? "",
     title_en: post?.title_en ?? "",
@@ -436,6 +457,56 @@ export default function BlogPostForm({ post }: { post?: Post }) {
 
   const set = (k: keyof typeof form, v: string | boolean) =>
     setForm((prev) => ({ ...prev, [k]: v }));
+
+  const updateImgConfig = (
+    updater: (prev: BlogImageConfig) => BlogImageConfig,
+  ) => {
+    setImgConfig((prev) => {
+      const next = updater(prev);
+      const serialized = serializeBlogImages(next);
+      setForm((f) => ({ ...f, image: serialized }));
+      return next;
+    });
+  };
+
+  const activeBucketKey: "shared" | "vi" | "en" =
+    imgConfig.mode === "shared" ? "shared" : imgLangTab;
+  const activeImages = imgConfig[activeBucketKey];
+
+  const addImagesToBucket = (
+    urls: string[],
+    bucket: "shared" | "vi" | "en" = activeBucketKey,
+  ) => {
+    const clean = urls.map((u) => u.trim()).filter(Boolean);
+    if (clean.length === 0) return;
+    updateImgConfig((prev) => ({
+      ...prev,
+      [bucket]: [...prev[bucket], ...clean],
+    }));
+  };
+
+  const removeImageFromBucket = (
+    index: number,
+    bucket: "shared" | "vi" | "en" = activeBucketKey,
+  ) => {
+    updateImgConfig((prev) => ({
+      ...prev,
+      [bucket]: prev[bucket].filter((_, idx) => idx !== index),
+    }));
+  };
+
+  const setPrimaryImageInBucket = (
+    index: number,
+    bucket: "shared" | "vi" | "en" = activeBucketKey,
+  ) => {
+    if (index <= 0) return;
+    updateImgConfig((prev) => {
+      const list = [...prev[bucket]];
+      const [picked] = list.splice(index, 1);
+      list.unshift(picked);
+      return { ...prev, [bucket]: list };
+    });
+  };
 
   // Auto-generate slug from title when slug hasn't been manually edited
   // Priority: title_en (cleaner slug) → title_vi (fallback, Vietnamese chars transliterated)
@@ -455,6 +526,7 @@ export default function BlogPostForm({ post }: { post?: Post }) {
       editorRef.current.innerHTML =
         lang === "vi" ? form.content_vi : form.content_en;
     }
+    setImgLangTab(lang);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lang]);
 
@@ -479,8 +551,10 @@ export default function BlogPostForm({ post }: { post?: Post }) {
     });
   };
 
-  /* Insert image at saved cursor position */
-  const insertImageInEditor = (url: string) => {
+  /* Insert one or multiple images at saved cursor position */
+  const insertImagesInEditor = (urls: string[]) => {
+    const clean = urls.map((u) => u.trim()).filter(Boolean);
+    if (clean.length === 0) return;
     const editor = editorRef.current;
     if (!editor) return;
     editor.focus();
@@ -490,16 +564,20 @@ export default function BlogPostForm({ post }: { post?: Post }) {
       sel?.addRange(savedEditorRange.current);
       savedEditorRange.current = null;
     }
-    document.execCommand(
-      "insertHTML",
-      false,
-      `<img src="${url}" style="max-width:100%;height:auto;display:block;margin:8px 0;border-radius:6px;" />`,
-    );
+    const html = clean
+      .map(
+        (url) =>
+          `<img src="${url}" style="max-width:100%;height:auto;display:block;margin:8px 0;border-radius:6px;" />`,
+      )
+      .join("<p><br/></p>");
+    document.execCommand("insertHTML", false, html);
     requestAnimationFrame(() => {
       if (editor)
         set(lang === "vi" ? "content_vi" : "content_en", editor.innerHTML);
     });
   };
+
+  const insertImageInEditor = (url: string) => insertImagesInEditor([url]);
 
   const syncEditorContent = () => {
     requestAnimationFrame(() => {
@@ -569,13 +647,13 @@ export default function BlogPostForm({ post }: { post?: Post }) {
       },
     },
     {
-      label: "Chèn ảnh",
+      label: "Chèn 1 hoặc nhiều ảnh",
       icon: <ImageIcon size={13} />,
       action: () => {
         const sel = window.getSelection();
         if (sel && sel.rangeCount > 0)
           savedEditorRange.current = sel.getRangeAt(0).cloneRange();
-        setUrlDialog({ type: "image", value: "https://", savedRange: null });
+        setUrlDialog({ type: "image", value: "", savedRange: null });
       },
     },
   ];
@@ -585,7 +663,12 @@ export default function BlogPostForm({ post }: { post?: Post }) {
     setSaving(true);
     setError("");
     const supabase = createClient();
-    const payload = { ...form, updated_at: new Date().toISOString() };
+    const serializedImage = serializeBlogImages(imgConfig);
+    const payload = {
+      ...form,
+      image: serializedImage,
+      updated_at: new Date().toISOString(),
+    };
     const { error: err } = isEdit
       ? await supabase.from("blog_posts").update(payload).eq("id", post.id)
       : await supabase.from("blog_posts").insert(payload);
@@ -606,16 +689,26 @@ export default function BlogPostForm({ post }: { post?: Post }) {
     router.refresh();
   };
 
-  const handleImageUpload = async (file: File) => {
-    if (file.size > MAX_IMAGE_MB * 1024 * 1024) {
-      setError(`Ảnh vượt quá ${MAX_IMAGE_MB}MB. Vui lòng chọn ảnh nhỏ hơn.`);
-      return;
+  const handleImageUpload = async (files: FileList | File[]) => {
+    const fileArr = Array.from(files);
+    if (fileArr.length === 0) return;
+    for (const file of fileArr) {
+      if (file.size > MAX_IMAGE_MB * 1024 * 1024) {
+        setError(
+          `Ảnh "${file.name}" vượt quá ${MAX_IMAGE_MB}MB. Vui lòng chọn ảnh nhỏ hơn.`,
+        );
+        return;
+      }
     }
     setUploading(true);
     try {
       const supabase = createClient();
-      const url = await uploadImage(file, supabase);
-      insertImageInEditor(url);
+      const uploadedUrls: string[] = [];
+      for (const file of fileArr) {
+        const url = await uploadImage(file, supabase);
+        uploadedUrls.push(url);
+      }
+      insertImagesInEditor(uploadedUrls);
       setUrlDialog(null);
     } catch (err) {
       console.error("Upload lỗi:", err);
@@ -627,18 +720,26 @@ export default function BlogPostForm({ post }: { post?: Post }) {
     }
   };
 
-  const handleCoverUpload = async (file: File) => {
-    if (file.size > MAX_IMAGE_MB * 1024 * 1024) {
-      setError(`Ảnh bìa vượt quá ${MAX_IMAGE_MB}MB.`);
-      return;
+  const handleCoverUpload = async (files: FileList | File[]) => {
+    const fileArr = Array.from(files);
+    if (fileArr.length === 0) return;
+    for (const file of fileArr) {
+      if (file.size > MAX_IMAGE_MB * 1024 * 1024) {
+        setError(`Ảnh "${file.name}" vượt quá ${MAX_IMAGE_MB}MB.`);
+        return;
+      }
     }
     setCoverUploading(true);
     try {
       const supabase = createClient();
-      const url = await uploadImage(file, supabase);
-      set("image", url);
+      const uploadedUrls: string[] = [];
+      for (const file of fileArr) {
+        const url = await uploadImage(file, supabase);
+        uploadedUrls.push(url);
+      }
+      addImagesToBucket(uploadedUrls, activeBucketKey);
     } catch (err) {
-      console.error("Upload ảnh bìa lỗi:", err);
+      console.error("Upload ảnh bài viết lỗi:", err);
       setError(
         "Upload thất bại. Kiểm tra bucket 'images' đã tạo trong Supabase Storage chưa.",
       );
@@ -649,27 +750,31 @@ export default function BlogPostForm({ post }: { post?: Post }) {
 
   return (
     <>
-      {/* Hidden file input for image upload */}
+      {/* Hidden file input for editor image upload (supports multiple) */}
       <input
         ref={imageFileRef}
         type="file"
         accept="image/*"
+        multiple
         className="hidden"
         onChange={(e) => {
-          const file = e.target.files?.[0];
-          if (file) handleImageUpload(file);
+          if (e.target.files && e.target.files.length > 0) {
+            handleImageUpload(e.target.files);
+          }
           e.target.value = "";
         }}
       />
-      {/* Hidden file input for cover image upload */}
+      {/* Hidden file input for post cover/gallery upload (supports multiple) */}
       <input
         ref={coverFileRef}
         type="file"
         accept="image/*"
+        multiple
         className="hidden"
         onChange={(e) => {
-          const file = e.target.files?.[0];
-          if (file) handleCoverUpload(file);
+          if (e.target.files && e.target.files.length > 0) {
+            handleCoverUpload(e.target.files);
+          }
           e.target.value = "";
         }}
       />
@@ -681,39 +786,56 @@ export default function BlogPostForm({ post }: { post?: Post }) {
             if (e.target === e.currentTarget) setUrlDialog(null);
           }}
         >
-          <div className="bg-white rounded-2xl shadow-xl border border-slate-100 p-6 w-full max-w-sm mx-4 space-y-4">
+          <div className="bg-white rounded-2xl shadow-xl border border-slate-100 p-6 w-full max-w-md mx-4 space-y-4">
             <h3 className="text-sm font-semibold text-slate-800">
-              {urlDialog.type === "link" ? "Chèn liên kết" : "Chèn ảnh"}
+              {urlDialog.type === "link"
+                ? "Chèn liên kết"
+                : `Chèn ảnh vào nội dung (${lang === "vi" ? "🇻🇳 Tiếng Việt" : "🇺🇸 English"})`}
             </h3>
-            <input
-              autoFocus
-              type="url"
-              value={urlDialog.value}
-              onChange={(e) =>
-                setUrlDialog((d) => d && { ...d, value: e.target.value })
-              }
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  e.preventDefault();
-                  const url = urlDialog.value;
-                  if (url && url !== "https://") {
-                    editorRef.current?.focus();
-                    if (urlDialog.type === "link" && urlDialog.savedRange) {
-                      const sel = window.getSelection();
-                      sel?.removeAllRanges();
-                      sel?.addRange(urlDialog.savedRange);
-                      execCmd("createLink", url);
-                    } else if (urlDialog.type === "image") {
-                      insertImageInEditor(url);
-                    }
-                  }
-                  setUrlDialog(null);
+            {urlDialog.type === "link" ? (
+              <input
+                autoFocus
+                type="url"
+                value={urlDialog.value}
+                onChange={(e) =>
+                  setUrlDialog((d) => d && { ...d, value: e.target.value })
                 }
-                if (e.key === "Escape") setUrlDialog(null);
-              }}
-              placeholder="https://"
-              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all"
-            />
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    const url = urlDialog.value;
+                    if (url && url !== "https://") {
+                      editorRef.current?.focus();
+                      if (urlDialog.savedRange) {
+                        const sel = window.getSelection();
+                        sel?.removeAllRanges();
+                        sel?.addRange(urlDialog.savedRange);
+                        execCmd("createLink", url);
+                      }
+                    }
+                    setUrlDialog(null);
+                  }
+                  if (e.key === "Escape") setUrlDialog(null);
+                }}
+                placeholder="https://"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all"
+              />
+            ) : (
+              <div>
+                <textarea
+                  autoFocus
+                  rows={3}
+                  value={urlDialog.value}
+                  onChange={(e) =>
+                    setUrlDialog((d) => d && { ...d, value: e.target.value })
+                  }
+                  placeholder={
+                    "Dán 1 hoặc nhiều URL ảnh (mỗi dòng 1 URL)...\nhttps://example.com/anh-1.jpg\nhttps://example.com/anh-2.jpg"
+                  }
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all resize-none"
+                />
+              </div>
+            )}
             <div className="flex gap-2 justify-end">
               <button
                 type="button"
@@ -725,16 +847,20 @@ export default function BlogPostForm({ post }: { post?: Post }) {
               <button
                 type="button"
                 onClick={() => {
-                  const url = urlDialog.value;
-                  if (url && url !== "https://") {
+                  const val = urlDialog.value.trim();
+                  if (val && val !== "https://") {
                     editorRef.current?.focus();
                     if (urlDialog.type === "link" && urlDialog.savedRange) {
                       const sel = window.getSelection();
                       sel?.removeAllRanges();
                       sel?.addRange(urlDialog.savedRange);
-                      execCmd("createLink", url);
+                      execCmd("createLink", val);
                     } else if (urlDialog.type === "image") {
-                      insertImageInEditor(url);
+                      const urls = val
+                        .split(/[\n,]+/)
+                        .map((u) => u.trim())
+                        .filter(Boolean);
+                      insertImagesInEditor(urls);
                     }
                   }
                   setUrlDialog(null);
@@ -750,7 +876,7 @@ export default function BlogPostForm({ post }: { post?: Post }) {
               <>
                 <div className="flex items-center gap-2">
                   <div className="flex-1 h-px bg-slate-100" />
-                  <span className="text-xs text-slate-400">hoặc</span>
+                  <span className="text-xs text-slate-400">hoặc chọn nhiều ảnh</span>
                   <div className="flex-1 h-px bg-slate-100" />
                 </div>
                 <button
@@ -767,7 +893,7 @@ export default function BlogPostForm({ post }: { post?: Post }) {
                   ) : (
                     <>
                       <Upload size={14} />
-                      Tải từ thiết bị
+                      Tải 1 hoặc nhiều ảnh từ thiết bị
                     </>
                   )}
                 </button>
@@ -783,7 +909,7 @@ export default function BlogPostForm({ post }: { post?: Post }) {
                   className="w-full flex items-center justify-center gap-2 px-4 py-2.5 border border-dashed border-slate-300 rounded-xl text-sm text-slate-600 hover:bg-slate-50 hover:border-blue-400 hover:text-blue-600 transition-colors"
                 >
                   <ImageIcon size={14} />
-                  Chọn từ thư viện
+                  Chọn 1 hoặc nhiều ảnh từ thư viện
                 </button>
               </>
             )}
@@ -793,11 +919,19 @@ export default function BlogPostForm({ post }: { post?: Post }) {
 
       {libraryTarget && (
         <ImagePickerModal
+          multiple
           onSelect={(url) => {
             if (libraryTarget === "cover") {
-              set("image", url);
+              addImagesToBucket([url], activeBucketKey);
             } else {
               insertImageInEditor(url);
+            }
+          }}
+          onSelectMultiple={(urls) => {
+            if (libraryTarget === "cover") {
+              addImagesToBucket(urls, activeBucketKey);
+            } else {
+              insertImagesInEditor(urls);
             }
           }}
           onClose={() => setLibraryTarget(null)}
@@ -1203,101 +1337,350 @@ export default function BlogPostForm({ post }: { post?: Post }) {
 
           {/* ── Settings sidebar ── */}
           <div className="space-y-4">
-            {/* Cover image */}
-            <div className="bg-white rounded-2xl border border-slate-100 p-5 space-y-3">
-              <div className="flex items-center justify-between">
-                <h3 className="text-sm font-semibold text-slate-700">
-                  Ảnh bìa
-                </h3>
-                <div className="flex items-center gap-2">
+            {/* Cover & Gallery Images (Multi-image + Optional VI/EN) */}
+            <div className="bg-white rounded-2xl border border-slate-100 p-5 space-y-3.5">
+              <div className="flex items-center justify-between gap-2">
+                <div>
+                  <h3 className="text-sm font-semibold text-slate-700">
+                    Hình ảnh bài viết
+                  </h3>
+                  <p className="text-[11px] text-slate-400">
+                    Hỗ trợ nhiều ảnh · Tuỳ chọn tách ảnh VI / EN
+                  </p>
+                </div>
+                {activeImages.length > 0 && (
                   <button
                     type="button"
-                    onClick={() => setLibraryTarget("cover")}
-                    className="text-[11px] text-blue-500 hover:text-blue-700 transition-colors"
+                    onClick={() =>
+                      updateImgConfig((prev) => ({
+                        ...prev,
+                        [activeBucketKey]: [],
+                      }))
+                    }
+                    className="text-[11px] text-red-500 hover:text-red-700 transition-colors font-medium"
                   >
-                    Thư viện
+                    Xoá hết ({activeImages.length})
                   </button>
-                  {form.image && (
+                )}
+              </div>
+
+              {/* Mode toggle: Dùng chung vs Tách riêng VI / EN */}
+              <div className="grid grid-cols-2 gap-1 p-1 bg-slate-100 rounded-xl">
+                <button
+                  type="button"
+                  onClick={() =>
+                    updateImgConfig((prev) => {
+                      const merged =
+                        prev.shared.length > 0
+                          ? prev.shared
+                          : prev.vi.length > 0
+                            ? prev.vi
+                            : prev.en;
+                      return { ...prev, mode: "shared", shared: merged };
+                    })
+                  }
+                  className={`py-1.5 px-2 rounded-lg text-xs font-semibold transition-all ${
+                    imgConfig.mode === "shared"
+                      ? "bg-white text-blue-700 shadow-xs"
+                      : "text-slate-500 hover:text-slate-700"
+                  }`}
+                >
+                  🌐 Dùng chung ({imgConfig.shared.length})
+                </button>
+                <button
+                  type="button"
+                  onClick={() =>
+                    updateImgConfig((prev) => {
+                      const nextVi =
+                        prev.vi.length > 0 ? prev.vi : [...prev.shared];
+                      return {
+                        ...prev,
+                        mode: "separate",
+                        vi: nextVi,
+                      };
+                    })
+                  }
+                  className={`py-1.5 px-2 rounded-lg text-xs font-semibold transition-all ${
+                    imgConfig.mode === "separate"
+                      ? "bg-white text-blue-700 shadow-xs"
+                      : "text-slate-500 hover:text-slate-700"
+                  }`}
+                >
+                  🇻🇳/🇺🇸 Riêng VI · EN
+                </button>
+              </div>
+
+              {/* Separate VI / EN language sub-tabs */}
+              {imgConfig.mode === "separate" && (
+                <div className="space-y-2">
+                  <div className="flex gap-1.5">
                     <button
                       type="button"
-                      onClick={() => set("image", "")}
-                      className="text-[11px] text-red-500 hover:text-red-700 transition-colors"
+                      onClick={() => setImgLangTab("vi")}
+                      className={`flex-1 py-2 px-2.5 rounded-xl text-xs font-semibold border transition-all flex items-center justify-center gap-1.5 ${
+                        imgLangTab === "vi"
+                          ? "bg-blue-50 border-blue-200 text-blue-700"
+                          : "bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100"
+                      }`}
                     >
-                      Xoá ảnh
+                      🇻🇳 Hình VI
+                      <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-white border border-slate-200">
+                        {imgConfig.vi.length}
+                      </span>
                     </button>
-                  )}
-                </div>
-              </div>
-              {form.image ? (
-                <div
-                  className="rounded-xl overflow-hidden border border-slate-100 bg-slate-50 relative group cursor-pointer"
-                  onClick={() => coverFileRef.current?.click()}
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={form.image}
-                    alt="Cover preview"
-                    className="w-full object-cover"
-                    style={{ height: "150px" }}
-                    onError={(e) => {
-                      (e.currentTarget as HTMLImageElement).src =
-                        "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100%25' height='100'%3E%3Crect fill='%23f1f5f9' width='100%25' height='100'/%3E%3Ctext fill='%2394a3b8' x='50%25' y='55' font-size='11' text-anchor='middle' font-family='sans-serif'%3EKhông load được ảnh%3C/text%3E%3C/svg%3E";
-                    }}
-                  />
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
-                    <span className="text-white text-xs font-semibold flex items-center gap-1.5">
-                      <Upload size={13} /> Thay ảnh
+                    <button
+                      type="button"
+                      onClick={() => setImgLangTab("en")}
+                      className={`flex-1 py-2 px-2.5 rounded-xl text-xs font-semibold border transition-all flex items-center justify-center gap-1.5 ${
+                        imgLangTab === "en"
+                          ? "bg-blue-50 border-blue-200 text-blue-700"
+                          : "bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100"
+                      }`}
+                    >
+                      🇺🇸 Hình EN
+                      <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-white border border-slate-200">
+                        {imgConfig.en.length}
+                      </span>
+                    </button>
+                  </div>
+
+                  <div className="flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg bg-amber-50/70 border border-amber-100 text-[11px] text-amber-700">
+                    <span>
+                      Không bắt buộc cả hai — nếu để trống 1 bên sẽ tự dùng ảnh bên kia.
                     </span>
                   </div>
-                  {coverUploading && (
-                    <div className="absolute inset-0 bg-white/80 flex items-center justify-center">
-                      <Loader2
-                        size={20}
-                        className="animate-spin text-blue-500"
-                      />
+
+                  {/* Quick copy between VI and EN */}
+                  {imgLangTab === "en" &&
+                    imgConfig.en.length === 0 &&
+                    imgConfig.vi.length > 0 && (
+                      <button
+                        type="button"
+                        onClick={() =>
+                          updateImgConfig((prev) => ({
+                            ...prev,
+                            en: [...prev.vi],
+                          }))
+                        }
+                        className="w-full flex items-center justify-center gap-1.5 py-1.5 text-[11px] font-semibold text-blue-600 bg-blue-50/60 hover:bg-blue-50 rounded-lg border border-blue-100 transition-colors"
+                      >
+                        <Copy size={11} /> Sao chép {imgConfig.vi.length} ảnh từ VI sang EN
+                      </button>
+                    )}
+                  {imgLangTab === "vi" &&
+                    imgConfig.vi.length === 0 &&
+                    imgConfig.en.length > 0 && (
+                      <button
+                        type="button"
+                        onClick={() =>
+                          updateImgConfig((prev) => ({
+                            ...prev,
+                            vi: [...prev.en],
+                          }))
+                        }
+                        className="w-full flex items-center justify-center gap-1.5 py-1.5 text-[11px] font-semibold text-blue-600 bg-blue-50/60 hover:bg-blue-50 rounded-lg border border-blue-100 transition-colors"
+                      >
+                        <Copy size={11} /> Sao chép {imgConfig.en.length} ảnh từ EN sang VI
+                      </button>
+                    )}
+                </div>
+              )}
+
+              {/* Primary cover preview + Image Gallery list */}
+              {activeImages.length > 0 ? (
+                <div className="space-y-2.5">
+                  {/* Cover image (#1) */}
+                  <div className="rounded-xl overflow-hidden border border-blue-200 bg-slate-50 relative group">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={activeImages[0]}
+                      alt="Cover preview"
+                      className="w-full object-cover"
+                      style={{ height: "145px" }}
+                      onError={(e) => {
+                        (e.currentTarget as HTMLImageElement).src =
+                          "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100%25' height='100'%3E%3Crect fill='%23f1f5f9' width='100%25' height='100'/%3E%3Ctext fill='%2394a3b8' x='50%25' y='55' font-size='11' text-anchor='middle' font-family='sans-serif'%3EKhông load được ảnh%3C/text%3E%3C/svg%3E";
+                      }}
+                    />
+                    <span className="absolute top-2 left-2 inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-blue-600 text-white shadow">
+                      <Star size={10} fill="currentColor" /> Ảnh bìa chính
+                      {imgConfig.mode === "separate"
+                        ? ` (${imgLangTab.toUpperCase()})`
+                        : ""}
+                    </span>
+                    <div className="absolute bottom-2 right-2 flex items-center gap-1">
+                      <button
+                        type="button"
+                        onClick={() => insertImageInEditor(activeImages[0])}
+                        title="Chèn ảnh này vào nội dung bài viết"
+                        className="px-2 py-1 rounded-lg bg-slate-900/80 hover:bg-blue-600 text-white text-[10px] font-semibold flex items-center gap-1 transition-colors backdrop-blur-xs"
+                      >
+                        <FilePlus2 size={11} /> Chèn vào bài
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => removeImageFromBucket(0)}
+                        title="Xoá ảnh này"
+                        className="p-1 rounded-lg bg-red-600/90 hover:bg-red-700 text-white transition-colors"
+                      >
+                        <Trash2 size={12} />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Additional images list (#2, #3, ...) */}
+                  {activeImages.length > 1 && (
+                    <div className="space-y-1.5">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[11px] font-semibold text-slate-500">
+                          Danh sách ảnh ({activeImages.length} ảnh)
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => insertImagesInEditor(activeImages)}
+                          className="text-[11px] font-semibold text-blue-600 hover:text-blue-800 flex items-center gap-1"
+                        >
+                          <FilePlus2 size={11} /> Chèn cả {activeImages.length} ảnh vào bài
+                        </button>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2 max-h-56 overflow-y-auto pr-0.5">
+                        {activeImages.map((imgUrl, idx) => (
+                          <div
+                            key={`${imgUrl}-${idx}`}
+                            className={`relative rounded-xl overflow-hidden border group ${
+                              idx === 0
+                                ? "border-blue-400 ring-1 ring-blue-300"
+                                : "border-slate-200"
+                            }`}
+                          >
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                              src={imgUrl}
+                              alt={`Image ${idx + 1}`}
+                              className="w-full h-20 object-cover bg-slate-50"
+                            />
+                            <span
+                              className={`absolute top-1.5 left-1.5 px-1.5 py-0.5 rounded text-[10px] font-bold ${
+                                idx === 0
+                                  ? "bg-blue-600 text-white"
+                                  : "bg-slate-900/75 text-white"
+                              }`}
+                            >
+                              {idx === 0 ? "★ Bìa" : `#${idx + 1}`}
+                            </span>
+                            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/45 to-transparent p-1.5 flex items-center justify-end gap-1 opacity-95 group-hover:opacity-100 transition-opacity">
+                              {idx > 0 && (
+                                <button
+                                  type="button"
+                                  onClick={() => setPrimaryImageInBucket(idx)}
+                                  title="Đặt làm ảnh bìa chính"
+                                  className="px-1.5 py-0.5 rounded bg-amber-500 hover:bg-amber-600 text-white text-[10px] font-bold"
+                                >
+                                  Đặt bìa
+                                </button>
+                              )}
+                              <button
+                                type="button"
+                                onClick={() => insertImageInEditor(imgUrl)}
+                                title="Chèn vào nội dung"
+                                className="px-1.5 py-0.5 rounded bg-blue-600 hover:bg-blue-700 text-white text-[10px] font-semibold"
+                              >
+                                Chèn
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => removeImageFromBucket(idx)}
+                                title="Xoá ảnh"
+                                className="p-1 rounded bg-red-600 hover:bg-red-700 text-white"
+                              >
+                                <Trash2 size={10} />
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>
               ) : (
-                <>
-                  <button
-                    type="button"
-                    onClick={() => coverFileRef.current?.click()}
-                    disabled={coverUploading}
-                    className="w-full rounded-xl border-2 border-dashed border-slate-200 bg-slate-50 hover:border-blue-400 hover:bg-blue-50/30 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
-                    style={{ height: "100px" }}
-                  >
-                    {coverUploading ? (
-                      <Loader2
-                        size={18}
-                        className="animate-spin text-blue-500"
-                      />
-                    ) : (
-                      <>
-                        <Upload size={16} className="text-slate-400" />
-                        <span className="text-xs text-slate-500">
-                          Tải ảnh từ thiết bị
-                        </span>
-                      </>
-                    )}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setLibraryTarget("cover")}
-                    className="w-full flex items-center justify-center gap-1.5 py-2 text-xs text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-xl border border-slate-200 transition-colors"
-                  >
-                    <ImageIcon size={13} />
-                    Chọn từ thư viện
-                  </button>
-                </>
+                <div className="rounded-xl border-2 border-dashed border-slate-200 bg-slate-50/70 p-4 text-center">
+                  <ImageIcon size={22} className="mx-auto text-slate-300 mb-1" />
+                  <p className="text-xs text-slate-500 font-medium">
+                    {imgConfig.mode === "separate"
+                      ? `Chưa có ảnh riêng cho ${imgLangTab === "vi" ? "🇻🇳 Tiếng Việt" : "🇺🇸 English"}`
+                      : "Chưa có hình ảnh nào"}
+                  </p>
+                  {imgConfig.mode === "separate" && (
+                    <p className="text-[11px] text-slate-400 mt-0.5">
+                      Nếu để trống, web tự dùng ảnh của ngôn ngữ còn lại
+                    </p>
+                  )}
+                </div>
               )}
-              <input
-                type="url"
-                value={form.image}
-                onChange={(e) => set("image", e.target.value)}
-                placeholder="hoặc dán URL ảnh..."
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all"
-              />
+
+              {/* Action buttons: Upload multiple files or Pick multiple from Library */}
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => coverFileRef.current?.click()}
+                  disabled={coverUploading}
+                  className="flex items-center justify-center gap-1.5 py-2 px-3 text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-xl border border-blue-200 transition-colors disabled:opacity-50"
+                >
+                  {coverUploading ? (
+                    <Loader2 size={13} className="animate-spin text-blue-600" />
+                  ) : (
+                    <Upload size={13} />
+                  )}
+                  Tải 1 / nhiều ảnh
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setLibraryTarget("cover")}
+                  className="flex items-center justify-center gap-1.5 py-2 px-3 text-xs font-semibold text-slate-600 hover:text-blue-600 hover:bg-blue-50 rounded-xl border border-slate-200 transition-colors"
+                >
+                  <ImageIcon size={13} />
+                  Chọn từ thư viện
+                </button>
+              </div>
+
+              {/* Add image by URL */}
+              <div className="flex gap-1.5">
+                <input
+                  type="url"
+                  value={newImgUrl}
+                  onChange={(e) => setNewImgUrl(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      if (newImgUrl.trim()) {
+                        addImagesToBucket(
+                          newImgUrl.split(/[\n,]+/),
+                          activeBucketKey,
+                        );
+                        setNewImgUrl("");
+                      }
+                    }
+                  }}
+                  placeholder="Dán URL ảnh rồi nhấn + để thêm..."
+                  className="flex-1 min-w-0 px-3 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (newImgUrl.trim()) {
+                      addImagesToBucket(
+                        newImgUrl.split(/[\n,]+/),
+                        activeBucketKey,
+                      );
+                      setNewImgUrl("");
+                    }
+                  }}
+                  className="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-900 text-white text-xs font-semibold flex items-center gap-1 shrink-0 transition-colors"
+                  title="Thêm URL ảnh"
+                >
+                  <Plus size={13} /> Thêm
+                </button>
+              </div>
             </div>
 
             {/* Post settings */}

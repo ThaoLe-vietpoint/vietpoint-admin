@@ -1,6 +1,7 @@
 import { createClient } from "@/utils/supabase/server";
 import Link from "next/link";
-import { Plus, FileText, Globe, BookOpen } from "lucide-react";
+import { Plus, FileText, Globe, BookOpen, Images } from "lucide-react";
+import { resolveBlogImages } from "@/utils/blogImages";
 import BlogPostActions from "./BlogPostActions";
 
 const categoryColors: Record<string, string> = {
@@ -89,7 +90,9 @@ export default async function BlogPage() {
       {/* Post list */}
       {posts && posts.length > 0 ? (
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          {posts.map((post) => (
+          {posts.map((post) => {
+            const imgMeta = resolveBlogImages(post.image, "vi");
+            return (
             <div
               key={post.id}
               className="group bg-white rounded-2xl border border-slate-100 overflow-hidden hover:shadow-md transition-shadow flex flex-col"
@@ -99,10 +102,10 @@ export default async function BlogPage() {
                 className="relative overflow-hidden bg-slate-100"
                 style={{ height: "160px" }}
               >
-                {post.image ? (
+                {imgMeta.cover ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
-                    src={post.image}
+                    src={imgMeta.cover}
                     alt={post.title_vi || post.title_en || ""}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
@@ -111,6 +114,19 @@ export default async function BlogPage() {
                     <FileText size={28} className="text-slate-300" />
                   </div>
                 )}
+                {/* Image count / VI-EN badge */}
+                <div className="absolute bottom-2 left-2 flex items-center gap-1">
+                  {imgMeta.images.length > 1 && (
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-slate-900/75 text-white backdrop-blur-xs">
+                      <Images size={11} /> {imgMeta.images.length} ảnh
+                    </span>
+                  )}
+                  {imgMeta.mode === "separate" && (
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-blue-600/90 text-white backdrop-blur-xs">
+                      VI:{imgMeta.viCount} · EN:{imgMeta.enCount}
+                    </span>
+                  )}
+                </div>
                 {/* Status badge */}
                 <div className="absolute top-2 right-2">
                   <span
@@ -174,7 +190,8 @@ export default async function BlogPage() {
                 </div>
               </div>
             </div>
-          ))}
+            );
+          })}
         </div>
       ) : (
         <div className="bg-white rounded-2xl border border-slate-100 py-20 text-center">

@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import {
@@ -15,6 +15,8 @@ import {
   Circle,
   Trash2,
   Filter,
+  Search,
+  RotateCcw,
 } from "lucide-react";
 
 type Lead = {
@@ -68,7 +70,43 @@ const KEY_ICONS: Record<string, React.ReactNode> = {
   "Hợp đồng": <FileText size={13} />,
   Policy: <FileText size={13} />,
   "Green Card": <FileText size={13} />,
+  Age: <User size={13} />,
+  "Savings/mo": <FileText size={13} />,
+  Protect: <FileText size={13} />,
 };
+
+function formatSource(source?: string): { label: string; cls: string } {
+  switch (source) {
+    case "medicare_quote_form":
+    case "iul_quote_form":
+      return {
+        label: "Form Medicare / IUL",
+        cls: "bg-blue-50 text-blue-700 border-blue-200",
+      };
+    case "quote_form":
+    case "home_quote":
+      return {
+        label: "Báo giá Trang chủ",
+        cls: "bg-purple-50 text-purple-700 border-purple-200",
+      };
+    case "chat_widget":
+      return {
+        label: "Chat Widget",
+        cls: "bg-amber-50 text-amber-700 border-amber-200",
+      };
+    case "calculator":
+    case "fee_calculator":
+      return {
+        label: "Tính phí BH",
+        cls: "bg-teal-50 text-teal-700 border-teal-200",
+      };
+    default:
+      return {
+        label: "Trang Liên hệ",
+        cls: "bg-slate-100 text-slate-600 border-slate-200",
+      };
+  }
+}
 
 function LeadDialog({
   lead,
@@ -101,7 +139,14 @@ function LeadDialog({
               {lead.name?.[0]?.toUpperCase() ?? "?"}
             </div>
             <div>
-              <p className="font-semibold text-slate-800">{lead.name || "—"}</p>
+              <div className="flex items-center gap-2">
+                <p className="font-semibold text-slate-800">{lead.name || "—"}</p>
+                <span
+                  className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold border ${formatSource(lead.source).cls}`}
+                >
+                  {formatSource(lead.source).label}
+                </span>
+              </div>
               <p className="text-xs text-slate-400">
                 {new Date(lead.created_at).toLocaleString("vi-VN")}
               </p>
@@ -228,12 +273,140 @@ export default function LeadsTable({ leads: initial }: { leads: Lead[] }) {
   const [leads, setLeads] = useState<Lead[]>(initial);
   const [selected, setSelected] = useState<Lead | null>(null);
   const [filter, setFilter] = useState<FilterType>("all");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sourceFilter, setSourceFilter] = useState("all");
+  const [topicFilter, setTopicFilter] = useState("all");
+  const [stateFilter, setStateFilter] = useState("all");
+  const [dateRange, setDateRange] = useState<"all" | "today" | "7d" | "30d" | "custom">("all");
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
+  const [sortBy, setSortBy] = useState<"newest" | "oldest" | "name">("newest");
 
-  const filtered = leads.filter((l) => {
-    if (filter === "pending") return !l.processed;
-    if (filter === "done") return l.processed;
-    return true;
-  });
+  // Extract unique states from messages
+  const availableStates = useMemo(() => {
+    const set = new Set<string>();
+    leads.forEach((l) => {
+      const parsed = parseMessage(l.message);
+      const st = parsed["Tiểu bang"] || parsed["State"];
+      if (st) set.add(st);
+    });
+    return Array.from(set).sort();
+  }, [leads]);
+
+  const hasActiveFilters =
+    filter !== "all" ||
+    searchQuery.trim() !== "" ||
+    sourceFilter !== "all" ||
+    topicFilter !== "all" ||
+    stateFilter !== "all" ||
+    dateRange !== "all" ||
+    sortBy !== "newest";
+
+  const resetFilters = () => {
+    setFilter("all");
+    setSearchQuery("");
+    setSourceFilter("all");
+    setTopicFilter("all");
+    setStateFilter("all");
+    setDateRange("all");
+    setFromDate("");
+    setToDate("");
+    setSortBy("newest");
+  };
+
+  const filtered = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    const now = new Date();
+    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+
+    return leads
+      .filter((l) => {
+        // 1. Status filter
+        if (filter === "pending" && l.processed) return false;
+        if (filter === "done" && !l.processed) return false;
+
+        // 2. Source filter
+        if (sourceFilter !== "all") {
+          const s = l.source || "contact_form";
+          if (sourceFilter === "medicare" && s !== "medicare_quote_form" && s !== "iul_quote_form") return false;
+          if (sourceFilter === "contact" && s !== "contact_form") return false;
+          if (sourceFilter === "home" && s !== "quote_form" && s !== "home_quote") return false;
+          if (sourceFilter === "chat" && s !== "chat_widget") return false;
+        }
+
+        // 3. Topic / Product / Request filter
+        if (topicFilter !== "all") {
+          const msgLower = (l.message || "").toLowerCase();
+          const srcLower = (l.source || "").toLowerCase();
+          if (topicFilter === "medicare") {
+            if (!msgLower.includes("medicare") && !msgLower.includes("iul") && !srcLower.includes("medicare") && !srcLower.includes("iul")) return false;
+          } else if (topicFilter === "aca") {
+            if (!msgLower.includes("aca") && !msgLower.includes("marketplace") && !msgLower.includes("kid-iul")) return false;
+          } else if (topicFilter === "auto") {
+            if (!msgLower.includes("auto") && !msgLower.includes("xe") && !msgLower.includes("termlife")) return false;
+          } else if (topicFilter === "consult") {
+            if (!msgLower.includes("tư vấn sản phẩm") && !msgLower.includes("product consultation")) return false;
+          } else if (topicFilter === "info") {
+            if (!msgLower.includes("hỗ trợ thông tin") && !msgLower.includes("information support")) return false;
+          } else if (topicFilter === "billing") {
+            if (!msgLower.includes("địa chỉ thanh toán") && !msgLower.includes("billing address")) return false;
+          } else if (topicFilter === "feedback") {
+            if (!msgLower.includes("phản hồi") && !msgLower.includes("khiếu nại") && !msgLower.includes("feedback") && !msgLower.includes("complaint")) return false;
+          }
+        }
+
+        // 4. State filter
+        if (stateFilter !== "all") {
+          const parsed = parseMessage(l.message);
+          const st = parsed["Tiểu bang"] || parsed["State"] || "";
+          if (st !== stateFilter) return false;
+        }
+
+        // 5. Date range filter
+        if (dateRange !== "all") {
+          const createdMs = new Date(l.created_at).getTime();
+          if (dateRange === "today" && createdMs < startOfToday) return false;
+          if (dateRange === "7d" && createdMs < now.getTime() - 7 * 86400000) return false;
+          if (dateRange === "30d" && createdMs < now.getTime() - 30 * 86400000) return false;
+          if (dateRange === "custom") {
+            if (fromDate) {
+              const fromMs = new Date(fromDate + "T00:00:00").getTime();
+              if (createdMs < fromMs) return false;
+            }
+            if (toDate) {
+              const toMs = new Date(toDate + "T23:59:59").getTime();
+              if (createdMs > toMs) return false;
+            }
+          }
+        }
+
+        // 6. Keyword search (name, phone, email, message, source)
+        if (q) {
+          const hay = [
+            l.name,
+            l.phone,
+            l.email,
+            l.message,
+            formatSource(l.source).label,
+          ]
+            .filter(Boolean)
+            .join(" ")
+            .toLowerCase();
+          if (!hay.includes(q)) return false;
+        }
+
+        return true;
+      })
+      .sort((a, b) => {
+        if (sortBy === "oldest") {
+          return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+        }
+        if (sortBy === "name") {
+          return (a.name || "").localeCompare(b.name || "", "vi");
+        }
+        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      });
+  }, [leads, filter, searchQuery, sourceFilter, topicFilter, stateFilter, dateRange, fromDate, toDate, sortBy]);
 
   async function handleToggle(id: string, current: boolean) {
     const supabase = createClient();
@@ -263,32 +436,197 @@ export default function LeadsTable({ leads: initial }: { leads: Lead[] }) {
 
   return (
     <>
-      {/* Filter bar */}
-      <div className="px-6 py-3 border-b border-slate-100 flex items-center gap-2">
-        <Filter size={14} className="text-slate-400 shrink-0" />
-        <div className="flex gap-1">
-          {FILTER_TABS.map((tab) => (
-            <button
-              key={tab.key}
-              onClick={() => setFilter(tab.key)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
-                filter === tab.key
-                  ? "bg-[#2F5E9E] text-white"
-                  : "bg-slate-100 text-slate-500 hover:bg-slate-200"
-              }`}
-            >
-              {tab.label}
-              <span
-                className={`ml-1.5 px-1.5 py-0.5 rounded-full text-[10px] font-bold ${
+      {/* Filter & Search bar */}
+      <div className="px-6 py-4 border-b border-slate-100 space-y-3 bg-slate-50/40">
+        {/* Top row: Search input + Status tabs + Reset */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+          {/* Search box */}
+          <div className="relative flex-1 max-w-md">
+            <Search
+              size={15}
+              className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"
+            />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Tìm theo tên, SĐT, email, tiểu bang, nội dung..."
+              className="w-full pl-9 pr-8 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+              >
+                <X size={13} />
+              </button>
+            )}
+          </div>
+
+          {/* Status tabs */}
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <Filter size={14} className="text-slate-400 shrink-0 mr-1" />
+            {FILTER_TABS.map((tab) => (
+              <button
+                key={tab.key}
+                onClick={() => setFilter(tab.key)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
                   filter === tab.key
-                    ? "bg-white/20 text-white"
-                    : "bg-slate-200 text-slate-500"
+                    ? "bg-[#2F5E9E] text-white"
+                    : "bg-white border border-slate-200 text-slate-600 hover:bg-slate-100"
                 }`}
               >
-                {counts[tab.key]}
-              </span>
+                {tab.label}
+                <span
+                  className={`ml-1.5 px-1.5 py-0.5 rounded-full text-[10px] font-bold ${
+                    filter === tab.key
+                      ? "bg-white/20 text-white"
+                      : "bg-slate-100 text-slate-500"
+                  }`}
+                >
+                  {counts[tab.key]}
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Second row: Detailed dropdown filters */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5 pt-1">
+          {/* Nguồn gửi */}
+          <div>
+            <label className="block text-[10px] font-semibold text-slate-400 uppercase mb-1">
+              Nguồn form
+            </label>
+            <select
+              value={sourceFilter}
+              onChange={(e) => setSourceFilter(e.target.value)}
+              className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs text-slate-700 focus:outline-none focus:border-blue-400"
+            >
+              <option value="all">Tất cả nguồn</option>
+              <option value="medicare">Form Medicare / IUL</option>
+              <option value="contact">Trang Liên hệ</option>
+              <option value="home">Báo giá Trang chủ</option>
+              <option value="chat">Chat Widget</option>
+            </select>
+          </div>
+
+          {/* Sản phẩm / Loại yêu cầu */}
+          <div>
+            <label className="block text-[10px] font-semibold text-slate-400 uppercase mb-1">
+              Sản phẩm / Yêu cầu
+            </label>
+            <select
+              value={topicFilter}
+              onChange={(e) => setTopicFilter(e.target.value)}
+              className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs text-slate-700 focus:outline-none focus:border-blue-400"
+            >
+              <option value="all">Tất cả sản phẩm & yêu cầu</option>
+              <option value="medicare">Bảo hiểm Medicare</option>
+              <option value="aca">ACA Marketplace</option>
+              <option value="auto">Auto Insurance (Bảo hiểm xe)</option>
+              <option value="consult">Tư vấn sản phẩm bảo hiểm</option>
+              <option value="info">Hỗ trợ thông tin</option>
+              <option value="billing">Cập nhật địa chỉ thanh toán</option>
+              <option value="feedback">Phản hồi / Khiếu nại</option>
+            </select>
+          </div>
+
+          {/* Tiểu bang */}
+          <div>
+            <label className="block text-[10px] font-semibold text-slate-400 uppercase mb-1">
+              Tiểu bang
+            </label>
+            <select
+              value={stateFilter}
+              onChange={(e) => setStateFilter(e.target.value)}
+              className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs text-slate-700 focus:outline-none focus:border-blue-400"
+            >
+              <option value="all">Tất cả tiểu bang</option>
+              {availableStates.map((st) => (
+                <option key={st} value={st}>
+                  {st}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Thời gian */}
+          <div>
+            <label className="block text-[10px] font-semibold text-slate-400 uppercase mb-1">
+              Thời gian gửi
+            </label>
+            <select
+              value={dateRange}
+              onChange={(e) =>
+                setDateRange(e.target.value as "all" | "today" | "7d" | "30d" | "custom")
+              }
+              className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs text-slate-700 focus:outline-none focus:border-blue-400"
+            >
+              <option value="all">Mọi thời gian</option>
+              <option value="today">Hôm nay</option>
+              <option value="7d">7 ngày qua</option>
+              <option value="30d">30 ngày qua</option>
+              <option value="custom">Tuỳ chọn từ ngày – đến ngày...</option>
+            </select>
+          </div>
+
+          {/* Sắp xếp */}
+          <div>
+            <label className="block text-[10px] font-semibold text-slate-400 uppercase mb-1">
+              Sắp xếp
+            </label>
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as "newest" | "oldest" | "name")}
+              className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs text-slate-700 focus:outline-none focus:border-blue-400"
+            >
+              <option value="newest">Mới nhất trước</option>
+              <option value="oldest">Cũ nhất trước</option>
+              <option value="name">Tên khách hàng (A → Z)</option>
+            </select>
+          </div>
+        </div>
+
+        {/* Custom date range inputs */}
+        {dateRange === "custom" && (
+          <div className="flex flex-wrap items-center gap-3 pt-1">
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-slate-500">Từ ngày:</span>
+              <input
+                type="date"
+                value={fromDate}
+                onChange={(e) => setFromDate(e.target.value)}
+                className="px-2.5 py-1 bg-white border border-slate-200 rounded-lg text-xs text-slate-700"
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-slate-500">Đến ngày:</span>
+              <input
+                type="date"
+                value={toDate}
+                onChange={(e) => setToDate(e.target.value)}
+                className="px-2.5 py-1 bg-white border border-slate-200 rounded-lg text-xs text-slate-700"
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Active filter summary & reset button */}
+        <div className="flex items-center justify-between pt-1 text-xs text-slate-500">
+          <span>
+            Hiển thị <strong className="text-slate-700">{filtered.length}</strong> /{" "}
+            {leads.length} liên hệ
+          </span>
+          {hasActiveFilters && (
+            <button
+              onClick={resetFilters}
+              className="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 hover:text-blue-700"
+            >
+              <RotateCcw size={12} />
+              Xoá bộ lọc
             </button>
-          ))}
+          )}
         </div>
       </div>
 
@@ -308,10 +646,10 @@ export default function LeadsTable({ leads: initial }: { leads: Lead[] }) {
                   Điện thoại
                 </th>
                 <th className="text-left px-6 py-3.5 text-xs font-semibold text-slate-500 uppercase tracking-wide hidden md:table-cell">
-                  Email
+                  Nguồn
                 </th>
                 <th className="text-left px-6 py-3.5 text-xs font-semibold text-slate-500 uppercase tracking-wide hidden lg:table-cell">
-                  Tin nhắn
+                  Tin nhắn / Chi tiết
                 </th>
                 <th className="text-left px-6 py-3.5 text-xs font-semibold text-slate-500 uppercase tracking-wide">
                   Ngày
@@ -352,14 +690,11 @@ export default function LeadsTable({ leads: initial }: { leads: Lead[] }) {
                     )}
                   </td>
                   <td className="px-6 py-4 hidden md:table-cell">
-                    {lead.email ? (
-                      <span className="flex items-center gap-1.5 text-slate-600">
-                        <Mail size={13} className="text-slate-400" />
-                        {lead.email}
-                      </span>
-                    ) : (
-                      <span className="text-slate-300">—</span>
-                    )}
+                    <span
+                      className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold border ${formatSource(lead.source).cls}`}
+                    >
+                      {formatSource(lead.source).label}
+                    </span>
                   </td>
                   <td className="px-6 py-4 hidden lg:table-cell">
                     {lead.message ? (
