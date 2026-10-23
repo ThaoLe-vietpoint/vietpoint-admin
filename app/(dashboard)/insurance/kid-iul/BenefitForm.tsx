@@ -32,8 +32,8 @@ export default function BenefitForm({
     ? "kid_iul_benefits"
     : "termlife_benefits";
   const sectionLabel = backHref.includes("kid-iul")
-    ? "IUL cho trẻ em — Quyền lợi"
-    : "Term Life — Quyền lợi";
+    ? "ACA Marketplace — Quyền lợi"
+    : "Auto Insurance — Quyền lợi";
 
   const [form, setForm] = useState<BenefitRow>(
     benefit

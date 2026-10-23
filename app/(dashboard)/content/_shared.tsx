@@ -69,63 +69,60 @@ export type Position = {
 // ─── Defaults ─────────────────────────────────────────────────────────────────
 export const DEFAULT_PRODUCTS: Product[] = [
   {
-    title: "IUL For Kids (EBTP)",
-    tag: "Children Protection",
-    tagColor: "#4CAF50",
-    image:
-      "https://thinksmartinsurance.com/wp-content/uploads/2025/04/EBTP-1024x683.webp",
-    description:
-      "Protect your children and build a financial fund for them to enter university, giving them wings to fly far and higher at the age of 18.",
-    features: [
-      "Education fund",
-      "Life protection",
-      "Builds cash value",
-      "Flexible premiums",
-    ],
-  },
-  {
-    title: "Max Funded IUL",
-    tag: "Retirement Planning",
-    tagColor: "#2196F3",
-    image:
-      "https://thinksmartinsurance.com/wp-content/uploads/2025/04/Maxfund-1024x683.webp",
-    description:
-      "Full retirement thanks to the ability to generate 8–15% profit per year, absolute safety thanks to the NO LOSS policy.",
-    features: [
-      "8–15% profit/year",
-      "NO LOSS policy",
-      "Illness protection",
-      "Death benefit",
-    ],
-  },
-  {
-    title: "IUL Secrets",
-    tag: "Premium IUL",
+    title: "Medicare",
+    title_vi: "Bảo Hiểm Medicare",
+    tag: "Health Insurance",
+    tag_vi: "Bảo Hiểm Sức Khỏe",
     tagColor: "#2F5E9E",
     image:
       "https://thinksmartinsurance.com/wp-content/uploads/2025/04/IUL-1024x683.webp",
     description:
-      "Compensation for more than 16 types of diseases and disabilities. Accumulate TAX-FREE retirement funds with high interest rates of 6–12%/year.",
+      "Federal health insurance primarily for people age 65 or older. Get Vietnamese-language guidance on hospital, medical, and prescription drug coverage.",
+    description_vi:
+      "Chương trình bảo hiểm sức khỏe liên bang dành cho người từ 65 tuổi trở lên. Tư vấn bằng tiếng Việt về quyền lợi bệnh viện, y tế và thuốc kê toa.",
     features: [
-      "16+ disease types",
-      "TAX-FREE retirement",
-      "6–12%/year returns",
-      "Death benefit",
+      "Hospital & medical coverage",
+      "Prescription drug support",
+      "Additional benefits",
+      "Vietnamese-language guidance",
     ],
   },
   {
-    title: "Term Life",
-    tag: "Term Insurance",
+    title: "ACA Marketplace",
+    title_vi: "Bảo Hiểm Sức Khỏe ACA Marketplace",
+    tag: "Individual & Family",
+    tag_vi: "Cá Nhân & Gia Đình",
+    tagColor: "#4CAF50",
+    image:
+      "https://thinksmartinsurance.com/wp-content/uploads/2025/04/EBTP-1024x683.webp",
+    description:
+      "Explore ACA Marketplace health insurance options with Vietnamese-language support. Understand coverage, estimated costs, and available financial assistance.",
+    description_vi:
+      "Tìm hiểu các lựa chọn bảo hiểm sức khỏe ACA Marketplace với sự hỗ trợ bằng tiếng Việt. Hiểu rõ quyền lợi, chi phí dự kiến và khả năng nhận hỗ trợ tài chính.",
+    features: [
+      "Essential health benefits",
+      "Individual & family plans",
+      "Preventive care services",
+      "Enrollment & renewal help",
+    ],
+  },
+  {
+    title: "Auto Insurance",
+    title_vi: "Bảo Hiểm Xe Hơi",
+    tag: "Vehicle Protection",
+    tag_vi: "Bảo Hiểm Xe",
     tagColor: "#FF9800",
     image:
       "https://thinksmartinsurance.com/wp-content/uploads/2025/04/Term-Life-1024x683.webp",
     description:
-      "CHEAP PRICE, suitable for all participants. Compensation for more than 16 types of diseases, disabilities and death with a contract term of up to 30 years.",
+      "Explore auto insurance coverage options, understand policy details, and find coverage that fits your needs and budget with our Vietnamese-speaking team.",
+    description_vi:
+      "Tìm hiểu các lựa chọn bảo hiểm xe hơi, giải thích điều khoản hợp đồng và tìm gói bảo hiểm phù hợp với nhu cầu và ngân sách cùng đội ngũ tiếng Việt.",
     features: [
-      "Affordable premiums",
-      "16+ disease types",
-      "Up to 30 years",
-      "Disability coverage",
+      "Liability coverage",
+      "Collision & comprehensive",
+      "Budget-friendly options",
+      "Personalized quote help",
     ],
   },
 ];

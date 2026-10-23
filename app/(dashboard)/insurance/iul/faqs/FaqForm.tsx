@@ -91,7 +91,7 @@ export default function FaqForm({ faq }: { faq?: FaqRow }) {
           <h1 className="text-xl font-bold text-slate-800">
             {isEdit ? "Chỉnh sửa câu hỏi" : "Thêm câu hỏi mới"}
           </h1>
-          <p className="text-sm text-slate-500">IUL — FAQ (Câu hỏi thường gặp)</p>
+          <p className="text-sm text-slate-500">Medicare — FAQ (Câu hỏi thường gặp)</p>
         </div>
       </div>
 

@@ -5,22 +5,23 @@ import BenefitActions from "./BenefitActions";
 import InsuranceContentEditor, { FieldDef } from "../InsuranceContentEditor";
 
 const KID_FIELDS: FieldDef[] = [
-  { section: "hero", field: "title", label: "Hero — Tiêu đề chính", defaultEn: "IUL For Kids (EBTP)", defaultVi: "IUL Cho Trẻ Em (EBTP)" },
-  { section: "hero", field: "cta", label: "Hero — Nút bấm", defaultEn: "Get Free Quote", defaultVi: "Nhận Báo Giá Miễn Phí" },
-  { section: "hero", field: "desc", label: "Hero — Mô tả", defaultEn: "Protect your children and build a financial fund for them to enter university, giving them wings to fly far and higher at the age of 18.", defaultVi: "Bảo vệ con bạn và xây dựng quỹ tài chính cho con vào đại học, cho con đôi cánh để bay xa hơn ở tuổi 18.", multiline: true, rows: 2 },
-  { section: "how", field: "h", label: "Mục Cách hoạt động — Tiêu đề", defaultEn: "How It Works", defaultVi: "Cách Thức Hoạt Động" },
-  { section: "how", field: "desc", label: "Mục Cách hoạt động — Mô tả", defaultEn: "IUL For Kids (EBTP — Educational Benefits Trust Program) is a specially designed Indexed Universal Life insurance policy for children. Parents start the policy early, premiums grow with the market, and by age 18 your child has a tax-free fund ready for college or life expenses.", defaultVi: "IUL For Kids (EBTP — Chương trình Tín thác Phúc lợi Giáo dục) là hợp đồng bảo hiểm nhân thọ toàn cầu có chỉ số được thiết kế đặc biệt cho trẻ em. Cha mẹ bắt đầu hợp đồng sớm, phí bảo hiểm tăng theo thị trường và đến năm 18 tuổi, con bạn có quỹ miễn thuế sẵn sàng cho đại học hoặc chi phí cuộc sống.", multiline: true, rows: 3 },
-  { section: "how", field: "step1_title", label: "Bước 01 — Tiêu đề", defaultEn: "Start Early", defaultVi: "Bắt Đầu Sớm" },
-  { section: "how", field: "step1_desc", label: "Bước 01 — Mô tả", defaultEn: "Enroll your child as young as 2 weeks old. The earlier you start, the lower the premiums and the more time the fund has to grow.", defaultVi: "Đăng ký cho con từ khi 2 tuần tuổi. Bắt đầu càng sớm, phí hàng tháng càng thấp và quỹ có nhiều thời gian để tăng trưởng.", multiline: true, rows: 2 },
-  { section: "how", field: "step2_title", label: "Bước 02 — Tiêu đề", defaultEn: "Grow Tax-Free", defaultVi: "Tăng Trưởng Miễn Thuế" },
-  { section: "how", field: "step2_desc", label: "Bước 02 — Mô tả", defaultEn: "Premiums are invested in the S&P 500 index with a 0% floor guarantee. Cash value grows every year — good markets or bad.", defaultVi: "Phí bảo hiểm được đầu tư vào chỉ số S&P 500 với sàn bảo đảm 0%. Giá trị tiền mặt tăng mỗi năm — dù thị trường tốt hay xấu.", multiline: true, rows: 2 },
-  { section: "how", field: "step3_title", label: "Bước 03 — Tiêu đề", defaultEn: "Collect at 18", defaultVi: "Rút Tiền Lúc 18 Tuổi" },
-  { section: "how", field: "step3_desc", label: "Bước 03 — Mô tả", defaultEn: "At age 18, your child can withdraw the accumulated fund completely tax-free for college, a car, a business, or any life goal.", defaultVi: "Ở tuổi 18, con bạn có thể rút toàn bộ quỹ tích lũy hoàn toàn miễn thuế cho đại học, xe hơi, kinh doanh hoặc bất kỳ mục tiêu nào.", multiline: true, rows: 2 },
-  { section: "sections", field: "benefits_h", label: "Tiêu đề mục Quyền lợi", defaultEn: "Key Benefits", defaultVi: "Các Lợi Ích Chính" },
-  { section: "testimonial", field: "quote", label: "Cảm nhận khách hàng — Nội dung", defaultEn: '"I started IUL For Kids for my daughter when she was 3. By the time she turned 18, she had over $80,000 in tax-free funds ready for college. Best financial decision I ever made for her."', defaultVi: '"Tôi bắt đầu IUL For Kids cho con gái khi cô bé 3 tuổi. Đến năm 18 tuổi, cô bé có hơn $80,000 quỹ miễn thuế sẵn sàng cho đại học. Đó là quyết định tài chính tốt nhất tôi từng làm cho con."', multiline: true, rows: 3 },
-  { section: "testimonial", field: "by", label: "Cảm nhận khách hàng — Tên người đánh giá", defaultEn: "— Ha Nguyen, VietPoint Client", defaultVi: "— Hà Nguyễn, Khách hàng VietPoint" },
-  { section: "cta", field: "h", label: "CTA cuối trang — Tiêu đề", defaultEn: "Give Your Child the Gift of Financial Security", defaultVi: "Tặng Con Bạn Nền Tảng Tài Chính Vững Chắc" },
-  { section: "cta", field: "sub", label: "CTA cuối trang — Phụ đề", defaultEn: "Start your child's IUL policy today. Consultation is free.", defaultVi: "Bắt đầu hợp đồng IUL cho con ngay hôm nay. Tư vấn hoàn toàn miễn phí." },
+  { section: "hero", field: "title", label: "Hero — Tiêu đề chính", defaultEn: "ACA Marketplace Health Insurance", defaultVi: "Bảo Hiểm Sức Khỏe ACA Marketplace" },
+  { section: "hero", field: "cta", label: "Hero — Nút bấm", defaultEn: "Get Free Quote", defaultVi: "Nhận Tư Vấn Miễn Phí" },
+  { section: "hero", field: "desc", label: "Hero — Mô tả", defaultEn: "Explore ACA Marketplace health insurance options with Vietnamese-language support. VietPoint helps you understand coverage, estimated costs, and available financial assistance based on your circumstances.", defaultVi: "Tìm hiểu các lựa chọn bảo hiểm sức khỏe ACA Marketplace với sự hỗ trợ bằng tiếng Việt. VietPoint giúp bạn hiểu rõ quyền lợi, chi phí dự kiến và khả năng đủ điều kiện nhận hỗ trợ tài chính tùy theo hoàn cảnh.", multiline: true, rows: 3 },
+  { section: "how", field: "h", label: "Mục Cách hoạt động — Tiêu đề", defaultEn: "How It Works", defaultVi: "Quy Trình Hỗ Trợ" },
+  { section: "how", field: "desc", label: "Mục Cách hoạt động — Mô tả", defaultEn: "VietPoint guides you through the ACA Marketplace enrollment process, from understanding your needs and reviewing available plans to completing your application and receiving enrollment confirmation.", defaultVi: "VietPoint đồng hành cùng bạn trong quá trình đăng ký ACA Marketplace, từ tìm hiểu nhu cầu, xem xét các chương trình hiện có đến hoàn tất hồ sơ và nhận xác nhận đăng ký.", multiline: true, rows: 3 },
+  { section: "how", field: "step1_title", label: "Bước 01 — Tiêu đề", defaultEn: "Free Consultation", defaultVi: "Tư vấn miễn phí" },
+  { section: "how", field: "step1_desc", label: "Bước 01 — Mô tả", defaultEn: "Contact VietPoint and tell us about your household, healthcare needs, and estimated income.", defaultVi: "Liên hệ VietPoint và chia sẻ thông tin hộ gia đình, nhu cầu chăm sóc sức khỏe và thu nhập dự kiến.", multiline: true, rows: 2 },
+  { section: "how", field: "step2_title", label: "Bước 02 — Tiêu đề", defaultEn: "Review Your Options", defaultVi: "Xem xét các lựa chọn" },
+  { section: "how", field: "step2_desc", label: "Bước 02 — Mô tả", defaultEn: "Review available plans, estimated premiums, deductibles, provider networks, and potential financial assistance.", defaultVi: "Xem xét các chương trình hiện có, phí bảo hiểm dự kiến, khoản khấu trừ, mạng lưới bác sĩ và khả năng nhận hỗ trợ tài chính.", multiline: true, rows: 2 },
+  { section: "how", field: "step3_title", label: "Bước 03 — Tiêu đề", defaultEn: "Complete Your Application", defaultVi: "Hoàn tất hồ sơ đăng ký" },
+  { section: "how", field: "step3_desc", label: "Bước 03 — Mô tả", defaultEn: "Provide the required information and complete your Marketplace application with guidance from your agent.", defaultVi: "Cung cấp thông tin cần thiết và hoàn tất hồ sơ Marketplace với sự hướng dẫn của tư vấn viên.", multiline: true, rows: 2 },
+  { section: "how", field: "step4_title", label: "Bước 04 — Tiêu đề", defaultEn: "Enrollment Confirmation", defaultVi: "Xác nhận đăng ký" },
+  { section: "how", field: "step4_desc", label: "Bước 04 — Mô tả", defaultEn: "Review your enrollment confirmation and follow any instructions provided by the insurance company, including premium payment if required.", defaultVi: "Kiểm tra xác nhận đăng ký và thực hiện các hướng dẫn từ công ty bảo hiểm, bao gồm thanh toán phí nếu được yêu cầu.", multiline: true, rows: 2 },
+  { section: "how", field: "step5_title", label: "Bước 05 — Tiêu đề", defaultEn: "Ongoing Support", defaultVi: "Hỗ trợ sau đăng ký" },
+  { section: "how", field: "step5_desc", label: "Bước 05 — Mô tả", defaultEn: "Contact VietPoint if you have questions about your coverage, premium payments, medical bills, or updating your Marketplace information.", defaultVi: "Liên hệ VietPoint nếu bạn có thắc mắc về quyền lợi bảo hiểm, thanh toán phí, hóa đơn y tế hoặc cập nhật thông tin Marketplace.", multiline: true, rows: 2 },
+  { section: "cta", field: "h", label: "CTA cuối trang — Tiêu đề", defaultEn: "Get Help Finding the Right Coverage", defaultVi: "Nhận Hỗ Trợ Tìm Bảo Hiểm Phù Hợp" },
+  { section: "cta", field: "sub", label: "CTA cuối trang — Phụ đề", defaultEn: "Contact VietPoint today for free consultation in Vietnamese.", defaultVi: "Liên hệ VietPoint ngay hôm nay để được tư vấn hoàn toàn miễn phí bằng tiếng Việt." },
 ];
 
 export default async function KidIULPage() {
@@ -43,13 +44,13 @@ export default async function KidIULPage() {
           Bảo hiểm
         </Link>
         <ChevronRight size={14} />
-        <span className="text-slate-700">IUL Cho Trẻ</span>
+        <span className="text-slate-700">ACA Marketplace</span>
       </div>
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
           <Baby size={22} className="text-pink-600" />
           <h1 className="text-xl font-bold text-slate-800">
-            IUL Cho Trẻ — Quyền lợi
+            ACA Marketplace — Quyền lợi
           </h1>
         </div>
         <Link
@@ -62,7 +63,7 @@ export default async function KidIULPage() {
 
       <InsuranceContentEditor
         pageKey="insurance_kid_iul"
-        title="Nội dung trang IUL Cho Trẻ (Hero, Mô tả, CTA)"
+        title="Nội dung trang ACA Marketplace (Hero, Quy trình 5 bước, CTA)"
         fields={KID_FIELDS}
         initialRows={contentRows ?? []}
       />

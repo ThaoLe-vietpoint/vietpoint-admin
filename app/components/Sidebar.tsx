@@ -106,25 +106,19 @@ const navGroups = [
       },
       {
         href: "/insurance/iul",
-        label: "IUL Secrets",
+        label: "Medicare",
         icon: Zap,
         indent: true,
       },
       {
         href: "/insurance/kid-iul",
-        label: "IUL Cho Trẻ",
+        label: "ACA Marketplace",
         icon: Baby,
         indent: true,
       },
       {
-        href: "/insurance/max-iul",
-        label: "Max-Funded IUL",
-        icon: TrendingUp,
-        indent: true,
-      },
-      {
         href: "/insurance/termlife",
-        label: "Term Life",
+        label: "Auto Insurance",
         icon: Clock,
         indent: true,
       },

@@ -18,13 +18,13 @@ export default async function IULStepsPage() {
         </Link>
         <ChevronRight size={14} />
         <Link href="/insurance/iul" className="hover:text-slate-700">
-          IUL Secrets
+          Medicare
         </Link>
         <ChevronRight size={14} />
-        <span className="text-slate-700">Các bước</span>
+        <span className="text-slate-700">Quy trình làm việc với VietPoint</span>
       </div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-xl font-bold text-slate-800">Các bước IUL</h1>
+        <h1 className="text-xl font-bold text-slate-800">Quy trình làm việc với VietPoint</h1>
         <Link
           href="/insurance/iul/steps/new"
           className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition-colors"

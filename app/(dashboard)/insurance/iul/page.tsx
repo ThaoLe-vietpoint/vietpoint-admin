@@ -4,19 +4,18 @@ import { Zap, ChevronRight, Plus } from "lucide-react";
 import InsuranceContentEditor, { FieldDef } from "../InsuranceContentEditor";
 
 const IUL_FIELDS: FieldDef[] = [
-  { section: "hero", field: "sub", label: "Hero — Nhãn phụ", defaultEn: "IUL SECRETS", defaultVi: "IUL SECRETS" },
-  { section: "hero", field: "h1", label: "Hero — Tiêu đề chính (Dòng 1)", defaultEn: "THE KEY TO YOUR", defaultVi: "CHÌA KHÓA CHO" },
-  { section: "hero", field: "h2", label: "Hero — Tiêu đề phụ (Dòng 2)", defaultEn: "FINANCIAL FUTURE", defaultVi: "TƯƠNG LAI TÀI CHÍNH CỦA BẠN" },
-  { section: "hero", field: "cta", label: "Hero — Nút bấm", defaultEn: "DISCOVER MORE", defaultVi: "KHÁM PHÁ NGAY" },
-  { section: "sections", field: "reasons_h1", label: "Tiêu đề mục Lý do", defaultEn: "6 REASONS TO JOIN", defaultVi: "6 LÝ DO NÊN THAM GIA" },
-  { section: "sections", field: "diseases_h1", label: "Tiêu đề mục Bệnh bảo hiểm", defaultEn: "Over 16 Types of Diseases and Injuries Covered", defaultVi: "Hơn 16 Loại Bệnh và Chấn Thương Được Bảo Hiểm" },
-  { section: "sections", field: "diseases_sub", label: "Phụ đề mục Bệnh bảo hiểm", defaultEn: "in the program's policy", defaultVi: "trong chính sách của chương trình" },
-  { section: "quote", field: "h1", label: "Mục Báo giá — Tiêu đề dòng 1", defaultEn: "HOW TO GET", defaultVi: "CÁCH NHẬN" },
-  { section: "quote", field: "h2", label: "Mục Báo giá — Tiêu đề dòng 2", defaultEn: "$1,000,000 RIGHT NOW", defaultVi: "$1,000,000 NGAY BÂY GIỜ" },
+  { section: "hero", field: "sub", label: "Hero — Nhãn phụ", defaultEn: "MEDICARE", defaultVi: "MEDICARE" },
+  { section: "hero", field: "h1", label: "Hero — Tiêu đề chính (Dòng 1)", defaultEn: "UNDERSTAND YOUR", defaultVi: "TÌM HIỂU CÁC LỰA CHỌN" },
+  { section: "hero", field: "h2", label: "Hero — Tiêu đề phụ (Dòng 2)", defaultEn: "MEDICARE OPTIONS", defaultVi: "BẢO HIỂM MEDICARE" },
+  { section: "hero", field: "cta", label: "Hero — Nút bấm", defaultEn: "GET MEDICARE HELP", defaultVi: "NHẬN HỖ TRỢ MEDICARE" },
+  { section: "sections", field: "reasons_h1", label: "Tiêu đề mục Lý do (Tìm Hiểu Về Medicare)", defaultEn: "WHY CHOOSE VIETPOINT", defaultVi: "TÌM HIỂU VỀ MEDICARE" },
+  { section: "sections", field: "diseases_h1", label: "Tiêu đề mục Bệnh bảo hiểm / Quyền lợi", defaultEn: "MEDICARE BENEFITS & SUPPORT", defaultVi: "QUYỀN LỢI & HỖ TRỢ MEDICARE" },
+  { section: "quote", field: "h1", label: "Mục Báo giá — Tiêu đề dòng 1", defaultEn: "GET PERSONALIZED", defaultVi: "NHẬN HƯỚNG DẪN" },
+  { section: "quote", field: "h2", label: "Mục Báo giá — Tiêu đề dòng 2", defaultEn: "MEDICARE GUIDANCE", defaultVi: "MEDICARE THEO NHU CẦU" },
   { section: "quote", field: "or", label: "Mục Báo giá — Dòng gọi trực tiếp", defaultEn: "Or call us directly", defaultVi: "Hoặc gọi trực tiếp cho chúng tôi" },
-  { section: "sections", field: "steps_h1", label: "Tiêu đề mục Các bước", defaultEn: "3 SIMPLE STEPS TO JOIN", defaultVi: "3 BƯỚC ĐƠN GIẢN ĐỂ THAM GIA" },
-  { section: "sections", field: "faq_h1", label: "Tiêu đề mục FAQ", defaultEn: "FAQ – Some Questions You Are Wondering", defaultVi: "FAQ – Những Câu Hỏi Bạn Đang Thắc Mắc" },
-  { section: "cta", field: "h1", label: "CTA cuối trang — Tiêu đề", defaultEn: "Get a Free Consultation Today", defaultVi: "Nhận Tư Vấn Miễn Phí Ngay Hôm Nay" },
+  { section: "sections", field: "steps_h1", label: "Tiêu đề mục Các bước", defaultEn: "3 SIMPLE STEPS TO GET STARTED", defaultVi: "QUY TRÌNH LÀM VIỆC VỚI VIETPOINT" },
+  { section: "sections", field: "faq_h1", label: "Tiêu đề mục FAQ", defaultEn: "MEDICARE FAQs", defaultVi: "CÂU HỎI THƯỜNG GẶP VỀ MEDICARE" },
+  { section: "cta", field: "h1", label: "CTA cuối trang — Tiêu đề", defaultEn: "Get Help Understanding Your Medicare Options", defaultVi: "Nhận Hỗ Trợ Tìm Hiểu Các Lựa Chọn Medicare Của Bạn" },
 ];
 
 export default async function IULPage() {
@@ -40,22 +39,22 @@ export default async function IULPage() {
   const sections = [
     {
       href: "/insurance/iul/reasons",
-      label: "Lý do chọn IUL",
-      desc: "Các lợi ích & lý do nổi bật",
+      label: "Tìm Hiểu Về Medicare",
+      desc: "Các nội dung giới thiệu & quyền lợi Medicare",
       count: reasonsCount ?? 0,
       color: "bg-blue-50 text-blue-600",
     },
     {
       href: "/insurance/iul/steps",
-      label: "Các bước",
-      desc: "Quy trình từng bước",
+      label: "Quy trình làm việc với VietPoint",
+      desc: "Các bước tư vấn, đăng ký & hỗ trợ",
       count: stepsCount ?? 0,
       color: "bg-purple-50 text-purple-600",
     },
     {
       href: "/insurance/iul/faqs",
       label: "FAQs",
-      desc: "Câu hỏi thường gặp",
+      desc: "Câu hỏi thường gặp về Medicare",
       count: faqsCount ?? 0,
       color: "bg-amber-50 text-amber-600",
     },
@@ -68,16 +67,16 @@ export default async function IULPage() {
           Bảo hiểm
         </Link>
         <ChevronRight size={14} />
-        <span className="text-slate-700">IUL Secrets</span>
+        <span className="text-slate-700">Medicare</span>
       </div>
       <div className="flex items-center gap-3">
         <Zap size={22} className="text-blue-600" />
-        <h1 className="text-xl font-bold text-slate-800">IUL Secrets</h1>
+        <h1 className="text-xl font-bold text-slate-800">Medicare</h1>
       </div>
 
       <InsuranceContentEditor
         pageKey="insurance_iul"
-        title="Nội dung trang IUL Secrets (Hero, Tiêu đề, CTA)"
+        title="Nội dung trang Medicare (Hero, Tiêu đề, CTA)"
         fields={IUL_FIELDS}
         initialRows={contentRows ?? []}
       />

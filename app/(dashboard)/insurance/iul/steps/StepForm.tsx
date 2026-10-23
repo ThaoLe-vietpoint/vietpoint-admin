@@ -94,7 +94,7 @@ export default function StepForm({ step }: { step?: StepRow }) {
           <h1 className="text-xl font-bold text-slate-800">
             {isEdit ? "Chỉnh sửa bước" : "Thêm bước mới"}
           </h1>
-          <p className="text-sm text-slate-500">IUL — How It Works</p>
+          <p className="text-sm text-slate-500">Medicare — Quy trình làm việc với VietPoint</p>
         </div>
       </div>
 

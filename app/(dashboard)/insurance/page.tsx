@@ -32,8 +32,8 @@ export default async function InsurancePage() {
   const products = [
     {
       href: "/insurance/iul",
-      label: "IUL Secrets",
-      desc: "Quản lý lý do chọn IUL, các bước và câu hỏi thường gặp",
+      label: "Medicare",
+      desc: "Quản lý Tìm hiểu về Medicare, Quy trình làm việc và FAQs",
       icon: Zap,
       color: "text-blue-600",
       bg: "bg-blue-50",
@@ -42,8 +42,8 @@ export default async function InsurancePage() {
     },
     {
       href: "/insurance/kid-iul",
-      label: "IUL Cho Trẻ",
-      desc: "Quản lý các quyền lợi bảo hiểm cho trẻ em",
+      label: "ACA Marketplace",
+      desc: "Quản lý Quy trình hỗ trợ và các quyền lợi ACA Marketplace",
       icon: Baby,
       color: "text-pink-600",
       bg: "bg-pink-50",
@@ -51,19 +51,9 @@ export default async function InsurancePage() {
       countLabel: "quyền lợi",
     },
     {
-      href: "/insurance/max-iul",
-      label: "Max-Funded IUL",
-      desc: "Quản lý các lý do chọn Max-Funded IUL",
-      icon: TrendingUp,
-      color: "text-emerald-600",
-      bg: "bg-emerald-50",
-      count: maxReasonsCount ?? 0,
-      countLabel: "lý do",
-    },
-    {
       href: "/insurance/termlife",
-      label: "Term Life",
-      desc: "Quản lý các quyền lợi bảo hiểm Term Life",
+      label: "Auto Insurance",
+      desc: "Quản lý các quyền lợi Bảo hiểm xe hơi (Auto Insurance)",
       icon: Clock,
       color: "text-orange-600",
       bg: "bg-orange-50",
@@ -77,17 +67,16 @@ export default async function InsurancePage() {
       <div>
         <h1 className="text-xl font-bold text-slate-800">Bảo hiểm</h1>
         <p className="text-sm text-slate-500 mt-0.5">
-          Quản lý nội dung 4 trang sản phẩm bảo hiểm
+          Quản lý nội dung 3 sản phẩm bảo hiểm (Medicare, ACA Marketplace, Auto Insurance)
         </p>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-3 gap-4">
         {[
-          { label: "IUL Secrets", value: iulTotal, icon: Zap, color: "text-blue-600", bg: "bg-blue-50" },
-          { label: "IUL Cho Trẻ", value: kidBenefitsCount ?? 0, icon: Baby, color: "text-pink-600", bg: "bg-pink-50" },
-          { label: "Max-Funded IUL", value: maxReasonsCount ?? 0, icon: TrendingUp, color: "text-emerald-600", bg: "bg-emerald-50" },
-          { label: "Term Life", value: termBenefitsCount ?? 0, icon: Clock, color: "text-orange-600", bg: "bg-orange-50" },
+          { label: "Medicare", value: iulTotal, icon: Zap, color: "text-blue-600", bg: "bg-blue-50" },
+          { label: "ACA Marketplace", value: kidBenefitsCount ?? 0, icon: Baby, color: "text-pink-600", bg: "bg-pink-50" },
+          { label: "Auto Insurance", value: termBenefitsCount ?? 0, icon: Clock, color: "text-orange-600", bg: "bg-orange-50" },
         ].map((c) => {
           const Icon = c.icon;
           return (

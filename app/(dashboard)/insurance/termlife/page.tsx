@@ -5,13 +5,13 @@ import BenefitActions from "../kid-iul/BenefitActions";
 import InsuranceContentEditor, { FieldDef } from "../InsuranceContentEditor";
 
 const TERMLIFE_FIELDS: FieldDef[] = [
-  { section: "hero", field: "title", label: "Hero — Tiêu đề chính", defaultEn: "TERM LIFE INSURANCE", defaultVi: "BẢO HIỂM KỲ HẠN (TERM LIFE)" },
-  { section: "hero", field: "cta", label: "Hero — Nút bấm", defaultEn: "Get Free Quote", defaultVi: "Nhận Báo Giá Miễn Phí" },
-  { section: "hero", field: "desc", label: "Hero — Mô tả", defaultEn: "Affordable protection for you and your family — covering over 16 critical illnesses with terms up to 30 years.", defaultVi: "Bảo vệ giá cả phải chăng cho bạn và gia đình — bao gồm hơn 16 bệnh nguy kịch với thời hạn lên đến 30 năm.", multiline: true, rows: 2 },
-  { section: "sections", field: "benefits_h", label: "Tiêu đề mục Quyền lợi", defaultEn: "Why Choose Term Life?", defaultVi: "Tại Sao Chọn Bảo Hiểm Kỳ Hạn?" },
-  { section: "sections", field: "compare_h", label: "Tiêu đề bảng So sánh", defaultEn: "Term Life vs. IUL — Which is Right for You?", defaultVi: "Term Life vs. IUL — Loại Nào Phù Hợp Với Bạn?" },
-  { section: "cta", field: "h", label: "CTA cuối trang — Tiêu đề", defaultEn: "Get Your Free Term Life Quote", defaultVi: "Nhận Báo Giá Bảo Hiểm Kỳ Hạn Miễn Phí" },
-  { section: "cta", field: "sub", label: "CTA cuối trang — Phụ đề", defaultEn: "Our agents are ready to find the most suitable Term Life plan for your family. Contact us today — consultation is completely free.", defaultVi: "Chuyên viên của chúng tôi sẵn sàng tìm gói Term Life phù hợp nhất cho gia đình bạn. Liên hệ ngay — tư vấn hoàn toàn miễn phí.", multiline: true, rows: 2 },
+  { section: "hero", field: "title", label: "Hero — Tiêu đề chính", defaultEn: "AUTO INSURANCE", defaultVi: "BẢO HIỂM XE HƠI" },
+  { section: "hero", field: "cta", label: "Hero — Nút bấm", defaultEn: "GET A FREE QUOTE", defaultVi: "NHẬN BÁO GIÁ MIỄN PHÍ" },
+  { section: "hero", field: "desc", label: "Hero — Mô tả", defaultEn: "Looking for auto insurance? VietPoint helps you explore coverage options, understand policy details, and find coverage that fits your needs and budget. Our Vietnamese-speaking team is here to make the process easier.", defaultVi: "Bạn đang tìm bảo hiểm xe hơi? VietPoint hỗ trợ bạn tìm hiểu các lựa chọn bảo hiểm, giải thích điều khoản hợp đồng và tìm gói bảo hiểm phù hợp với nhu cầu và ngân sách. Đội ngũ hỗ trợ bằng tiếng Việt luôn sẵn sàng giúp bạn thực hiện quy trình dễ dàng hơn.", multiline: true, rows: 3 },
+  { section: "sections", field: "benefits_h", label: "Tiêu đề mục Quyền lợi", defaultEn: "Why Choose Auto Insurance?", defaultVi: "Vì Sao Nên Có Bảo Hiểm Xe Hơi?" },
+  { section: "sections", field: "compare_h", label: "Tiêu đề bảng So sánh", defaultEn: "Understanding Your Auto Coverage Options", defaultVi: "Tìm Hiểu Các Quyền Lợi Bảo Hiểm Xe" },
+  { section: "cta", field: "h", label: "CTA cuối trang — Tiêu đề", defaultEn: "Get Your Free Auto Insurance Quote", defaultVi: "Nhận Báo Giá Bảo Hiểm Xe Miễn Phí" },
+  { section: "cta", field: "sub", label: "CTA cuối trang — Phụ đề", defaultEn: "Our team is ready to help you explore auto insurance options and understand your coverage. Contact VietPoint today for a free quote.", defaultVi: "Đội ngũ VietPoint sẵn sàng hỗ trợ bạn tìm hiểu các lựa chọn bảo hiểm xe và quyền lợi bảo hiểm. Liên hệ với chúng tôi ngay hôm nay để nhận báo giá miễn phí.", multiline: true, rows: 2 },
 ];
 
 export default async function TermLifePage() {
@@ -34,13 +34,13 @@ export default async function TermLifePage() {
           Bảo hiểm
         </Link>
         <ChevronRight size={14} />
-        <span className="text-slate-700">Term Life</span>
+        <span className="text-slate-700">Auto Insurance</span>
       </div>
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
           <Clock size={22} className="text-orange-600" />
           <h1 className="text-xl font-bold text-slate-800">
-            Term Life — Quyền lợi
+            Auto Insurance — Quyền lợi
           </h1>
         </div>
         <Link
@@ -53,7 +53,7 @@ export default async function TermLifePage() {
 
       <InsuranceContentEditor
         pageKey="insurance_termlife"
-        title="Nội dung trang Term Life (Hero, Tiêu đề, CTA)"
+        title="Nội dung trang Auto Insurance (Hero, Tiêu đề, CTA)"
         fields={TERMLIFE_FIELDS}
         initialRows={contentRows ?? []}
       />

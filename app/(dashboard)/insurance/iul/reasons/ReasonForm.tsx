@@ -93,9 +93,9 @@ export default function ReasonForm({ reason }: { reason?: ReasonRow }) {
         </Link>
         <div>
           <h1 className="text-xl font-bold text-slate-800">
-            {isEdit ? "Chỉnh sửa lý do" : "Thêm lý do mới"}
+            {isEdit ? "Chỉnh sửa mục" : "Thêm mục mới"}
           </h1>
-          <p className="text-sm text-slate-500">IUL — Lý do nên chọn IUL</p>
+          <p className="text-sm text-slate-500">Medicare — Tìm Hiểu Về Medicare</p>
         </div>
       </div>
 
