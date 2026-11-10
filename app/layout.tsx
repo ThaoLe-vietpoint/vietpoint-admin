@@ -8,6 +8,13 @@ export const metadata: Metadata = {
   title: "VietPoint Admin",
   description: "Admin Dashboard – VietPoint Financial",
   robots: { index: false, follow: false },
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon.png", type: "image/png", sizes: "512x512" },
+    ],
+    apple: "/apple-icon.png",
+  },
 };
 
 export default function RootLayout({
