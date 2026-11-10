@@ -122,7 +122,11 @@ export default function AboutEditor({ initialRows }: { initialRows: Row[] }) {
   const [aboutStoryVi, setAboutStoryVi] = useState({
     intro_text: initialVi.about?.story?.intro_text ?? "",
     brand_title: initialVi.about?.story?.brand_title ?? "",
-    brand_text: initialVi.about?.story?.brand_text ?? "",
+    brand_text:
+      initialVi.about?.story?.brand_text &&
+      !initialVi.about?.story?.brand_text.includes("VietPoint ra đời từ niềm tin đơn giản")
+        ? initialVi.about?.story?.brand_text
+        : initial.about?.story?.brand_text ?? "",
   });
   const [aboutMissionVi, setAboutMissionVi] = useState({
     mission: initialVi.about?.mission?.mission ?? "",
@@ -145,13 +149,19 @@ export default function AboutEditor({ initialRows }: { initialRows: Row[] }) {
     let upsertRows: Row[] = [];
 
     if (tab === "story") {
-      upsertRows = Object.entries(aboutStory).map(([field, value]) => ({
-        page: "about",
-        section: "story",
-        field,
-        value_en: value,
-        value_vi: (aboutStoryVi as Record<string, string>)[field] ?? "",
-      }));
+      upsertRows = Object.entries(aboutStory).map(([field, value]) => {
+        let viVal = (aboutStoryVi as Record<string, string>)[field];
+        if (!viVal || viVal.includes("VietPoint ra đời từ niềm tin đơn giản")) {
+          viVal = value;
+        }
+        return {
+          page: "about",
+          section: "story",
+          field,
+          value_en: value,
+          value_vi: viVal || value,
+        };
+      });
     } else if (tab === "mission") {
       upsertRows = Object.entries(aboutMission).map(([field, value]) => ({
         page: "about",

@@ -34,13 +34,13 @@ export default async function TermLifePage() {
           Bảo hiểm
         </Link>
         <ChevronRight size={14} />
-        <span className="text-slate-700">Auto Insurance</span>
+        <span className="text-slate-700">Bảo hiểm xe hơi</span>
       </div>
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
           <Clock size={22} className="text-orange-600" />
           <h1 className="text-xl font-bold text-slate-800">
-            Auto Insurance — Quyền lợi
+            Bảo hiểm xe hơi — Quyền lợi
           </h1>
         </div>
         <Link
@@ -53,7 +53,7 @@ export default async function TermLifePage() {
 
       <InsuranceContentEditor
         pageKey="insurance_termlife"
-        title="Nội dung trang Auto Insurance (Hero, Tiêu đề, CTA)"
+        title="Nội dung trang Bảo hiểm xe hơi (Hero, Tiêu đề, CTA)"
         fields={TERMLIFE_FIELDS}
         initialRows={contentRows ?? []}
       />

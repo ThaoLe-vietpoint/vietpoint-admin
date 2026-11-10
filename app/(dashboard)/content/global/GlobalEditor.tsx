@@ -16,6 +16,34 @@ const TABS = [
   { id: "social", label: "Mạng xã hội" },
 ];
 
+function translateHoursToVi(field: string, enVal: string, currentVi?: string) {
+  if (!enVal) return currentVi || "";
+  if (field === "weekdays") {
+    return enVal
+      .replace(/Monday\s*[-–]\s*Friday/i, "Thứ Hai – Thứ Sáu")
+      .replace(/Sunday\s*[-–]\s*Thursday/i, "Chủ Nhật – Thứ Năm")
+      .replace(/(\d+)\s*AM/gi, "$1 SA")
+      .replace(/(\d+)\s*PM/gi, "$1 CH")
+      .replace(/(\d+\s*SA)\s*[-–]?\s*(\d+\s*CH)/i, "$1 – $2")
+      .replace(/CLOSED/gi, "Đóng cửa")
+      .replace(/Closed/gi, "Đóng cửa")
+      .trim();
+  }
+  if (field === "weekend") {
+    return enVal
+      .replace(/Saturday\s*&\s*Sunday/i, "Thứ Bảy & Chủ Nhật")
+      .replace(/Friday\s*&\s*Saturday/i, "Thứ Sáu & Thứ Bảy")
+      .replace(/CLOSED/gi, "Đóng cửa")
+      .replace(/Closed/gi, "Đóng cửa")
+      .replace(/(\d+)\s*AM/gi, "$1 SA")
+      .replace(/(\d+)\s*PM/gi, "$1 CH")
+      .replace(/:\s*/, ": ")
+      .replace(/[-–]/, "–")
+      .trim();
+  }
+  return currentVi || enVal;
+}
+
 export default function GlobalEditor({ initialRows }: { initialRows: Row[] }) {
   const [tab, setTab] = useState("contact");
   const [saving, setSaving] = useState(false);
@@ -68,23 +96,30 @@ export default function GlobalEditor({ initialRows }: { initialRows: Row[] }) {
         section: "contact",
         field,
         value_en: value,
-        value_vi: field === "address" ? contactAddressVi : "",
+        value_vi: field === "address" ? (contactAddressVi.trim() || value) : value,
       }));
     } else if (tab === "hours") {
-      upsertRows = Object.entries(hours).map(([field, value]) => ({
-        page: "global",
-        section: "hours",
-        field,
-        value_en: value,
-        value_vi: (hoursVi as Record<string, string>)[field] ?? "",
-      }));
+      upsertRows = Object.entries(hours).map(([field, value]) => {
+        let viVal = (hoursVi as Record<string, string>)[field]?.trim();
+        const autoTranslated = translateHoursToVi(field, value, viVal);
+        if (!viVal || viVal.includes("Chủ Nhật") || viVal.includes("Thứ Sáu & Thứ Bảy") || viVal.includes("5 CH")) {
+          viVal = autoTranslated;
+        }
+        return {
+          page: "global",
+          section: "hours",
+          field,
+          value_en: value,
+          value_vi: viVal || autoTranslated || value,
+        };
+      });
     } else if (tab === "social") {
       upsertRows = Object.entries(social).map(([field, value]) => ({
         page: "global",
         section: "social",
         field,
         value_en: value,
-        value_vi: "",
+        value_vi: value,
       }));
     }
 
@@ -166,17 +201,29 @@ export default function GlobalEditor({ initialRows }: { initialRows: Row[] }) {
             label="Ngày thường"
             valueEn={hours.weekdays}
             valueVi={hoursVi.weekdays}
-            onChangeEn={(v) => setHours((p) => ({ ...p, weekdays: v }))}
+            onChangeEn={(v) => {
+              setHours((p) => ({ ...p, weekdays: v }));
+              setHoursVi((p) => ({
+                ...p,
+                weekdays: translateHoursToVi("weekdays", v, p.weekdays),
+              }));
+            }}
             onChangeVi={(v) => setHoursVi((p) => ({ ...p, weekdays: v }))}
-            placeholder="Sunday \u2013 Thursday: 9 AM \u2013 7 PM"
+            placeholder="Monday - Friday: 9AM-6PM"
           />
           <BiField
             label="Cuối tuần"
             valueEn={hours.weekend}
             valueVi={hoursVi.weekend}
-            onChangeEn={(v) => setHours((p) => ({ ...p, weekend: v }))}
+            onChangeEn={(v) => {
+              setHours((p) => ({ ...p, weekend: v }));
+              setHoursVi((p) => ({
+                ...p,
+                weekend: translateHoursToVi("weekend", v, p.weekend),
+              }));
+            }}
             onChangeVi={(v) => setHoursVi((p) => ({ ...p, weekend: v }))}
-            placeholder="Friday & Saturday: Closed"
+            placeholder="Saturday & Sunday: CLOSED"
           />
         </div>
       )}

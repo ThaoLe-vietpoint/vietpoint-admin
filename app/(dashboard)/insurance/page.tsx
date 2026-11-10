@@ -52,7 +52,7 @@ export default async function InsurancePage() {
     },
     {
       href: "/insurance/termlife",
-      label: "Auto Insurance",
+      label: "Bảo hiểm xe hơi",
       desc: "Quản lý các quyền lợi Bảo hiểm xe hơi (Auto Insurance)",
       icon: Clock,
       color: "text-orange-600",
@@ -67,7 +67,7 @@ export default async function InsurancePage() {
       <div>
         <h1 className="text-xl font-bold text-slate-800">Bảo hiểm</h1>
         <p className="text-sm text-slate-500 mt-0.5">
-          Quản lý nội dung 3 sản phẩm bảo hiểm (Medicare, ACA Marketplace, Auto Insurance)
+          Quản lý nội dung 3 sản phẩm bảo hiểm (Medicare, ACA Marketplace, Bảo hiểm xe hơi)
         </p>
       </div>
 
@@ -76,7 +76,7 @@ export default async function InsurancePage() {
         {[
           { label: "Medicare", value: iulTotal, icon: Zap, color: "text-blue-600", bg: "bg-blue-50" },
           { label: "ACA Marketplace", value: kidBenefitsCount ?? 0, icon: Baby, color: "text-pink-600", bg: "bg-pink-50" },
-          { label: "Auto Insurance", value: termBenefitsCount ?? 0, icon: Clock, color: "text-orange-600", bg: "bg-orange-50" },
+          { label: "Bảo hiểm xe hơi", value: termBenefitsCount ?? 0, icon: Clock, color: "text-orange-600", bg: "bg-orange-50" },
         ].map((c) => {
           const Icon = c.icon;
           return (

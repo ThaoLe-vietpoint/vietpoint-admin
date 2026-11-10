@@ -100,6 +100,18 @@ function formatSource(source?: string): { label: string; cls: string } {
         label: "Tính phí BH",
         cls: "bg-teal-50 text-teal-700 border-teal-200",
       };
+    case "newsletter":
+    case "newsletter_form":
+    case "newsletter_subscription":
+      return {
+        label: "Đăng ký Newsletter",
+        cls: "bg-emerald-50 text-emerald-700 border-emerald-200",
+      };
+    case "complaint_resolution_form":
+      return {
+        label: "Khiếu nại & Vấn đề",
+        cls: "bg-red-50 text-red-700 border-red-200",
+      };
     default:
       return {
         label: "Trang Liên hệ",
@@ -332,6 +344,8 @@ export default function LeadsTable({ leads: initial }: { leads: Lead[] }) {
           if (sourceFilter === "contact" && s !== "contact_form") return false;
           if (sourceFilter === "home" && s !== "quote_form" && s !== "home_quote") return false;
           if (sourceFilter === "chat" && s !== "chat_widget") return false;
+          if (sourceFilter === "newsletter" && s !== "newsletter" && s !== "newsletter_form" && s !== "newsletter_subscription") return false;
+          if (sourceFilter === "complaint" && s !== "complaint_resolution_form") return false;
         }
 
         // 3. Topic / Product / Request filter
@@ -508,6 +522,8 @@ export default function LeadsTable({ leads: initial }: { leads: Lead[] }) {
               <option value="contact">Trang Liên hệ</option>
               <option value="home">Báo giá Trang chủ</option>
               <option value="chat">Chat Widget</option>
+              <option value="newsletter">Đăng ký Newsletter</option>
+              <option value="complaint">Khiếu nại & Vấn đề</option>
             </select>
           </div>
 

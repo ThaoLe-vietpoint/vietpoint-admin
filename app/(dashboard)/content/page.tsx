@@ -12,7 +12,7 @@ const CONTENT_PAGES = [
   {
     href: "/content/about",
     icon: "ℹ️",
-    label: "Giới thiệu",
+    label: "Về chúng tôi",
     desc: "Câu chuyện, Sứ mệnh & Tầm nhìn, Giá trị, Đội ngũ, Lợi ích, CTA",
     color: "bg-purple-50 border-purple-100",
     badge: "7 sections",
@@ -24,22 +24,6 @@ const CONTENT_PAGES = [
     desc: "Thông tin liên hệ, Giờ làm việc, Mạng xã hội",
     color: "bg-emerald-50 border-emerald-100",
     badge: "3 sections",
-  },
-  {
-    href: "/content/recruitment",
-    icon: "👥",
-    label: "Tuyển dụng",
-    desc: "Hero, Vị trí tuyển dụng, Phúc lợi, CTA",
-    color: "bg-orange-50 border-orange-100",
-    badge: "4 sections",
-  },
-  {
-    href: "/content/verify-consultant",
-    icon: "🔍",
-    label: "Xác minh Tư vấn viên",
-    desc: "Hero, Form xác minh, Mẹo an toàn",
-    color: "bg-rose-50 border-rose-100",
-    badge: "2 sections",
   },
 ];
 

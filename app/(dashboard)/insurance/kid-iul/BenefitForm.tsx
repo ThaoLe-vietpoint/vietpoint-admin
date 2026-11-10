@@ -33,7 +33,7 @@ export default function BenefitForm({
     : "termlife_benefits";
   const sectionLabel = backHref.includes("kid-iul")
     ? "ACA Marketplace — Quyền lợi"
-    : "Auto Insurance — Quyền lợi";
+    : "Bảo hiểm xe hơi — Quyền lợi";
 
   const [form, setForm] = useState<BenefitRow>(
     benefit

@@ -2,17 +2,27 @@ import { createClient } from "@/utils/supabase/server";
 import { Phone, MessageCircle, Users, CheckCircle2, Circle } from "lucide-react";
 import LeadsTable from "./LeadsTable";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default async function LeadsPage() {
   const supabase = await createClient();
-  const { data: leads } = await supabase
+  const { data: allLeads } = await supabase
     .from("leads")
     .select("*")
     .order("created_at", { ascending: false });
 
-  const total = leads?.length ?? 0;
-  const withPhone = leads?.filter((l) => l.phone).length ?? 0;
-  const pending = leads?.filter((l) => !l.processed).length ?? 0;
-  const done = leads?.filter((l) => l.processed).length ?? 0;
+  // Filter out customer care complaints so complaints are managed exclusively in /customer-care/complaints
+  const leads = (allLeads ?? []).filter(
+    (l) =>
+      l.source !== "complaint_resolution_form" &&
+      !(l.message && l.message.includes("[KHIẾU NẠI"))
+  );
+
+  const total = leads.length;
+  const withPhone = leads.filter((l) => l.phone).length;
+  const pending = leads.filter((l) => !l.processed).length;
+  const done = leads.filter((l) => l.processed).length;
 
   const cards = [
     {

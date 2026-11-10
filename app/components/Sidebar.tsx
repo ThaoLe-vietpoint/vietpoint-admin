@@ -29,6 +29,8 @@ import {
   ShieldCheck,
   Users2,
   KeyRound,
+  HelpCircle,
+  AlertCircle,
 } from "lucide-react";
 
 const navGroups = [
@@ -42,19 +44,7 @@ const navGroups = [
     label: "Nội dung",
     items: [
       { href: "/content/home", label: "Trang chủ", icon: LayoutTemplate },
-      { href: "/content/about", label: "Giới thiệu", icon: Info },
-      {
-        href: "/content/recruitment",
-        label: "Tuyển dụng",
-        icon: Briefcase,
-        indent: true,
-      },
-      {
-        href: "/content/verify-consultant",
-        label: "Xác minh TV",
-        icon: UserCheck,
-        indent: true,
-      },
+      { href: "/content/about", label: "Về chúng tôi", icon: Info },
       { href: "/content/global", label: "Liên hệ & Footer", icon: Phone },
       { href: "/blog", label: "Bài viết Blog", icon: FileText },
       { href: "/media", label: "Thư viện ảnh", icon: ImageIcon },
@@ -65,32 +55,32 @@ const navGroups = [
     items: [
       {
         href: "/customer-care",
-        label: "Customer Care",
+        label: "Tổng quan CSKH",
         icon: HeartHandshake,
         exact: true,
       },
       {
-        href: "/customer-care/stories",
-        label: "Câu chuyện KH",
-        icon: Heart,
+        href: "/customer-care/support",
+        label: "Hỗ trợ khách hàng",
+        icon: Phone,
         indent: true,
       },
       {
-        href: "/customer-care/user-manual",
-        label: "Hướng dẫn SD",
-        icon: BookOpen,
+        href: "/customer-care/faqs",
+        label: "Câu hỏi thường gặp",
+        icon: HelpCircle,
         indent: true,
       },
       {
-        href: "/customer-care/claims",
-        label: "Quyền lợi BH",
-        icon: FileCheck,
+        href: "/customer-care/documents",
+        label: "Hướng dẫn giấy tờ",
+        icon: FileText,
         indent: true,
       },
       {
-        href: "/customer-care/priority-program",
-        label: "Ưu tiên",
-        icon: Trophy,
+        href: "/customer-care/complaints",
+        label: "Khiếu nại & Giải quyết",
+        icon: AlertCircle,
         indent: true,
       },
     ],
@@ -118,7 +108,7 @@ const navGroups = [
       },
       {
         href: "/insurance/termlife",
-        label: "Auto Insurance",
+        label: "Bảo hiểm xe hơi",
         icon: Clock,
         indent: true,
       },
